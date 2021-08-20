@@ -1,15 +1,16 @@
 import { registerAs } from '@nestjs/config';
 import { GqlModuleOptions } from '@nestjs/graphql';
+import { getNodeEnv, NodeEnv } from '../../../util/node-env';
 
 export type GraphqlConfigType = GqlModuleOptions;
 export const GRAPHQL_CONFIG_NAME = 'graphql';
 
 export const getGraphqlConfig = (): GraphqlConfigType => {
-  const env = process.env['ENV'] || 'development';
+  const nodeEnv = getNodeEnv();
 
   return {
-    debug: env === 'development',
-    playground: env === 'development',
+    debug: nodeEnv === NodeEnv.DEVELOPMENT,
+    playground: nodeEnv === NodeEnv.DEVELOPMENT,
     autoSchemaFile: true,
     installSubscriptionHandlers: true,
   };
