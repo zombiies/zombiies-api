@@ -13,6 +13,8 @@ export const getGraphqlConfig = (): GraphqlConfigType => {
     playground: nodeEnv === NodeEnv.DEVELOPMENT,
     autoSchemaFile: true,
     installSubscriptionHandlers: true,
+    cors: true,
+    introspection: nodeEnv === NodeEnv.DEVELOPMENT,
   };
 };
 

@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  api:
+    image: ghcr.io/zombiies/zombiies-server:latest
+    restart: always
+    environment:
+      NODE_ENV: development
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.zombiies-api-http.entrypoints=web"
+      - "traefik.http.routers.zombiies-api-http.middlewares=https_redirect"
+      - "traefik.http.routers.zombiies-api-http.rule=Host(`zombiies-api.2soft.top`)"
+      - "traefik.http.routers.zombiies-api.entrypoints=websecure"
+      - "traefik.http.routers.zombiies-api.rule=Host(`zombiies-api.2soft.top`)"
+      - "traefik.http.routers.zombiies-api.tls=true"
+      - "traefik.http.routers.zombiies-api.tls.certresolver=acmeresolver"
