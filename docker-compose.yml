@@ -4,8 +4,11 @@ services:
   api:
     image: ghcr.io/zombiies/zombiies-server:latest
     restart: always
+    depends_on:
+      - redis
     environment:
       NODE_ENV: development
+      REDIS_URL: redis://redis:6379
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
@@ -16,3 +19,12 @@ services:
       - "traefik.http.routers.zombiies-api.rule=Host(`zombiies-api.2soft.top`)"
       - "traefik.http.routers.zombiies-api.tls=true"
       - "traefik.http.routers.zombiies-api.tls.certresolver=acmeresolver"
+
+  redis:
+    image: redis:6
+    restart: always
+    volumes:
+      - redis:/data
+
+volumes:
+  redis:
