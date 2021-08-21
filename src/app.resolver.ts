@@ -1,13 +1,10 @@
 import { Query, Resolver, Subscription } from '@nestjs/graphql';
-import { PubSub } from 'apollo-server-express';
+import { InjectPubSub } from './lib/pub-sub';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
 
 @Resolver()
 export class AppResolver {
-  private pubSub: PubSub;
-
-  constructor() {
-    this.pubSub = new PubSub();
-  }
+  constructor(@InjectPubSub() private readonly pubSub: RedisPubSub) {}
 
   @Query((returns) => String)
   async helloWorld(): Promise<string> {
