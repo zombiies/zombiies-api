@@ -18,6 +18,10 @@ export class UserService {
       .exec();
   }
 
+  async findById(id: string): Promise<UserDocument> {
+    return this.userModel.findById(id);
+  }
+
   async findOne(filter: FilterQuery<UserDocument>): Promise<UserDocument> {
     return this.userModel.findOne(filter).exec();
   }

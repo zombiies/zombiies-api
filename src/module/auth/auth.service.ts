@@ -37,9 +37,7 @@ export class AuthService {
   async getUserFromPayload(payload: JwtPayloadType): Promise<UserDocument> {
     const { userId } = payload;
 
-    return this.userService.findOne({
-      id: userId,
-    });
+    return this.userService.findById(userId);
   }
 
   async generateToken(user: UserDocument): Promise<{ accessToken: string }> {
