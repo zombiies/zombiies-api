@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { GqlModuleOptions, GqlOptionsFactory } from '@nestjs/graphql';
 import { ConfigType } from '@nestjs/config';
-import graphqlConfigModule from './graphql.config.module';
+import graphqlConfigOption from './graphql.config.option';
 
 @Injectable()
 export default class GraphqlConfigService implements GqlOptionsFactory {
   constructor(
-    @Inject(graphqlConfigModule.KEY)
-    private readonly gqlConfig: ConfigType<typeof graphqlConfigModule>,
+    @Inject(graphqlConfigOption.KEY)
+    private readonly gqlConfig: ConfigType<typeof graphqlConfigOption>,
   ) {}
 
   createGqlOptions(): Promise<GqlModuleOptions> | GqlModuleOptions {

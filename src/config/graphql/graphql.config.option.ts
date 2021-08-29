@@ -1,10 +1,10 @@
 import { registerAs } from '@nestjs/config';
 import { GqlModuleOptions } from '@nestjs/graphql';
-import { getNodeEnv, NodeEnv } from '../../../util/node-env';
+import { getNodeEnv, NodeEnv } from '../../util/node-env';
 
-export type GraphqlConfigType = GqlModuleOptions;
+type GraphqlConfigOption = GqlModuleOptions;
 
-export const getGraphqlConfig = (): GraphqlConfigType => {
+export const getGraphqlConfig = (): GraphqlConfigOption => {
   const nodeEnv = getNodeEnv();
 
   return {
@@ -17,5 +17,5 @@ export const getGraphqlConfig = (): GraphqlConfigType => {
   };
 };
 
-const graphqlConfigModule = registerAs('graphql', () => getGraphqlConfig());
-export default graphqlConfigModule;
+const graphqlConfigOption = registerAs('graphql', () => getGraphqlConfig());
+export default graphqlConfigOption;
