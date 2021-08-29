@@ -11,6 +11,8 @@ export const getMongoOption = (): MongoConfigOption => {
 
   return {
     uri: env.MONGO_URI,
+    useCreateIndex: true,
+    useNewUrlParser: true,
   };
 };
 

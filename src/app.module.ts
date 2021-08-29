@@ -11,12 +11,20 @@ import { PubSubConfigService } from './config/pub-sub/pub-sub.config.service';
 import pubSubConfigOption from './config/pub-sub/pub-sub.config.option';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoConfigService } from './config/mongo/mongo.config.service';
+import { UserModule } from './module/user/user.module';
+import { AuthModule } from './module/auth/auth.module';
 import mongoConfigOption from './config/mongo/mongo.config.option';
+import securityConfigOption from './config/security/security.config.option';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [graphqlConfigOption, pubSubConfigOption, mongoConfigOption],
+      load: [
+        graphqlConfigOption,
+        pubSubConfigOption,
+        mongoConfigOption,
+        securityConfigOption,
+      ],
       isGlobal: true,
     }),
     GraphQLModule.forRootAsync({
@@ -28,6 +36,8 @@ import mongoConfigOption from './config/mongo/mongo.config.option';
     MongooseModule.forRootAsync({
       useClass: MongoConfigService,
     }),
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
