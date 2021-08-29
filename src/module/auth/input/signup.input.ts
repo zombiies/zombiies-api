@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { lowerCaseMiddleware } from '../../../middleware/field/lower-case.middleware';
 
 @InputType()
 export class SignupInput {
@@ -8,7 +9,7 @@ export class SignupInput {
   @MinLength(4)
   username: string;
 
-  @Field()
+  @Field({ middleware: [lowerCaseMiddleware] })
   @IsEmail()
   email: string;
 
