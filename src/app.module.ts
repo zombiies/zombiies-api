@@ -13,6 +13,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MongoConfigService } from './config/mongo/mongo.config.service';
 import { UserModule } from './module/user/user.module';
 import { AuthModule } from './module/auth/auth.module';
+import { CardModule } from './module/card/card.module';
 import mongoConfigOption from './config/mongo/mongo.config.option';
 import securityConfigOption from './config/security/security.config.option';
 
@@ -38,6 +39,7 @@ import securityConfigOption from './config/security/security.config.option';
     }),
     UserModule,
     AuthModule,
+    CardModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

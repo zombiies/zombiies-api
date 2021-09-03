@@ -1,6 +1,8 @@
 #!/bin/sh
 
+NEST="npx @nestjs/cli"
+
 echo "Generating module"
-nest g module $1
+$NEST g module $1
 echo "Generating service"
-nest g service $1
+$NEST g service $1
