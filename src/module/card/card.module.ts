@@ -2,26 +2,25 @@ import { Module } from '@nestjs/common';
 import { CardService } from './card.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Card, CardSchema } from './schema/card.schema';
-import { CardLevel, CardLevelSchema } from './schema/card-level.schema';
-import { CardSkill, CardSkillSchema } from './schema/card-skill.schema';
+import { CardCommand } from './command/card.command';
+import { CardResolver } from './card.resolver';
+import { SettingModule } from '../setting/setting.module';
 
 @Module({
-  providers: [CardService],
+  providers: [CardService, CardCommand, CardResolver],
   imports: [
-    MongooseModule.forFeature([
+    MongooseModule.forFeatureAsync([
       {
         name: Card.name,
-        schema: CardSchema,
-      },
-      {
-        name: CardLevel.name,
-        schema: CardLevelSchema,
-      },
-      {
-        name: CardSkill.name,
-        schema: CardSkillSchema,
+        useFactory: () => {
+          const schema = CardSchema;
+          schema.index({ name: 1, faction: 1 }, { unique: true });
+
+          return schema;
+        },
       },
     ]),
+    SettingModule,
   ],
 })
 export class CardModule {}

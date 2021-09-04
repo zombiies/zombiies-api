@@ -16,6 +16,11 @@ import { AuthModule } from './module/auth/auth.module';
 import { CardModule } from './module/card/card.module';
 import mongoConfigOption from './config/mongo/mongo.config.option';
 import securityConfigOption from './config/security/security.config.option';
+import { CommandModule } from 'nestjs-command';
+import pinataConfigOption from './config/pinata/pinata.config.option';
+import { PinataModule } from './lib/pinata/pinata.module';
+import { PinataConfigService } from './config/pinata/pinata.config.service';
+import { SettingModule } from './module/setting/setting.module';
 
 @Module({
   imports: [
@@ -25,6 +30,7 @@ import securityConfigOption from './config/security/security.config.option';
         pubSubConfigOption,
         mongoConfigOption,
         securityConfigOption,
+        pinataConfigOption,
       ],
       isGlobal: true,
     }),
@@ -37,9 +43,14 @@ import securityConfigOption from './config/security/security.config.option';
     MongooseModule.forRootAsync({
       useClass: MongoConfigService,
     }),
+    PinataModule.forRootAsync({
+      useClass: PinataConfigService,
+    }),
     UserModule,
     AuthModule,
     CardModule,
+    CommandModule,
+    SettingModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
