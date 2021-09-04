@@ -45,6 +45,9 @@ export class CardCommand {
           type: 'FACTORY',
         } as any,
       },
+      pinataOptions: {
+        cidVersion: 1,
+      },
     });
     await this.settingService.setSetting({
       factoryIpfsHash: factoryPin.IpfsHash,
@@ -82,6 +85,9 @@ export class CardCommand {
           keyvalues: {
             type: 'CARD',
           } as any,
+        },
+        pinataOptions: {
+          cidVersion: 1,
         },
       });
 
