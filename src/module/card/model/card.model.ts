@@ -16,7 +16,7 @@ export class CardModel {
   rareLevel: RareLevel;
   faction: Faction;
   type: CardType;
-  ipfsHash: string;
+  cid: string;
 
   @Field((type) => [CardLevelModel])
   levels: CardLevel[];
