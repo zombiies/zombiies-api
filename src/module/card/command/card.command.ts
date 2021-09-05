@@ -1,13 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
 import { InjectIpfsClient, createBlobFromObject } from '../../../lib/ipfs';
-import * as fs from 'fs';
-import { Card } from '../schema/card.schema';
+import { Card, CardSkill } from '../schema/card.schema';
 import { CardService } from '../card.service';
 import { Promise } from 'mongoose';
 import { SettingService } from '../../setting/setting.service';
 import { NFTStorage } from 'nft.storage';
-import './cards-seed.json'; // include JSON file to build
+import * as cardsSeed from './cards-seed.json';
+import { RareLevel } from '../enum/rare-level.enum';
+import { Faction } from '../enum/faction.enum';
+import { CardType } from '../enum/card-type.enum';
+
+interface CardSeed {
+  name: string;
+  cost: number;
+  rareLevel: RareLevel;
+  faction: Faction;
+  type: CardType;
+  levels: Array<{
+    level: number;
+    skills: CardSkill[];
+  }>;
+  startSeed: number;
+  endSeed: number;
+  totalSeeds: number;
+}
 
 @Injectable()
 export class CardCommand {
@@ -22,10 +39,24 @@ export class CardCommand {
     describe: 'seed cards',
   })
   async seed() {
-    const cardsRaw = fs.readFileSync(__dirname + '/cards-seed.json', 'utf-8');
-    const cardsData: Card[] = JSON.parse(cardsRaw);
+    const cards = (cardsSeed as CardSeed[]).flatMap((card) =>
+      card.levels.map((levelAttr) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { levels, ...cardAttrs } = card;
+
+        return {
+          ...cardAttrs,
+          ...levelAttr,
+        };
+      }),
+    );
+
     await this.cardService.deleteAll();
-    await this.doParallelJob<Card>(cardsData, 50, this.doSeed.bind(this));
+    await this.doParallelJob<Omit<Card, 'cid'>>(
+      cards,
+      50,
+      this.doSeed.bind(this),
+    );
     await this.pinFactory();
   }
 

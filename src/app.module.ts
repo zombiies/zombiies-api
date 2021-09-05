@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import graphqlConfigOption from './config/graphql/graphql.config.option';
 import { GraphQLModule } from '@nestjs/graphql';
 import GraphqlConfigService from './config/graphql/graphql.config.service';
@@ -21,6 +21,9 @@ import ipfsConfigOption from './config/ipfs/ipfs.config.option';
 import { IpfsModule } from './lib/ipfs';
 import { IpfsConfigService } from './config/ipfs/ipfs.config.service';
 import { SettingModule } from './module/setting/setting.module';
+import ethersConfigOption from './config/ethers/ethers.config.option';
+import { EthersModule } from 'nestjs-ethers';
+import { EtherClientModule } from './module/ether-client/ether-client.module';
 
 @Module({
   imports: [
@@ -31,6 +34,7 @@ import { SettingModule } from './module/setting/setting.module';
         mongoConfigOption,
         securityConfigOption,
         ipfsConfigOption,
+        ethersConfigOption,
       ],
       isGlobal: true,
     }),
@@ -46,11 +50,24 @@ import { SettingModule } from './module/setting/setting.module';
     IpfsModule.forRootAsync({
       useClass: IpfsConfigService,
     }),
+    EthersModule.forRootAsync({
+      providers: [ConfigService],
+      inject: [ethersConfigOption.KEY],
+      useFactory: (ethersConfig: ConfigType<typeof ethersConfigOption>) => {
+        const { network, alchemyApiKey } = ethersConfig;
+
+        return {
+          network: network,
+          alchemy: alchemyApiKey,
+        };
+      },
+    }),
     UserModule,
     AuthModule,
     CardModule,
     CommandModule,
     SettingModule,
+    EtherClientModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

@@ -8,4 +8,6 @@ export class UserModel {
   username: string;
   email: string;
   isVerified: boolean;
+  walletAddress: string;
+  walletBalance: string;
 }

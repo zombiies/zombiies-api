@@ -38,7 +38,10 @@ export class Card {
   cid: string;
 
   @Prop({ required: true })
-  levels: CardLevel[];
+  level: number;
+
+  @Prop({ required: true })
+  skills: CardSkill[];
 
   @Prop({ required: true })
   startSeed: number;

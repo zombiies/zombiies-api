@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
 import { UserResolver } from './user.resolver';
+import { EtherClientModule } from '../ether-client/ether-client.module';
 
 @Module({
   providers: [UserService, UserResolver],
@@ -13,6 +14,7 @@ import { UserResolver } from './user.resolver';
         schema: UserSchema,
       },
     ]),
+    EtherClientModule,
   ],
   exports: [UserService],
 })

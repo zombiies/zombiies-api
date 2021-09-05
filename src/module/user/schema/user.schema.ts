@@ -14,8 +14,8 @@ export class User {
   @Prop({ required: true })
   passwordDigest: string;
 
-  @Prop()
-  privateKey: string;
+  @Prop({ required: true })
+  privateKeyCipher: string;
 
   @Prop({ required: true, default: false })
   isVerified: boolean;

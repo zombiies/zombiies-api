@@ -14,7 +14,7 @@ import { SettingModule } from '../setting/setting.module';
         name: Card.name,
         useFactory: () => {
           const schema = CardSchema;
-          schema.index({ name: 1, faction: 1 }, { unique: true });
+          schema.index({ name: 1, faction: 1, level: 1 }, { unique: true });
 
           return schema;
         },
