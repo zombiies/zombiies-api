@@ -12,13 +12,22 @@ export class MongoExceptionFilter implements GqlExceptionFilter {
     switch (code) {
       case 11000: // Duplicate
         const field = parseDuplicatedField(exception);
-        return new UserInputError(`${field} is duplicated`, {
+        const duplicateMessage = `${field} is duplicated`;
+        return new UserInputError(duplicateMessage, {
           field: field,
+          response: {
+            message: [duplicateMessage],
+            statusCode: 400,
+          },
         });
     }
 
     return new UserInputError(message, {
       ...exception,
+      response: {
+        message: [message],
+        statusCode: 400,
+      },
     });
   }
 }
