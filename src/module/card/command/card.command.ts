@@ -7,6 +7,7 @@ import { CardService } from '../card.service';
 import { Promise } from 'mongoose';
 import { SettingService } from '../../setting/setting.service';
 import { NFTStorage } from 'nft.storage';
+import './cards-seed.json'; // include JSON file to build
 
 @Injectable()
 export class CardCommand {
