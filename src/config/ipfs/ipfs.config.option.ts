@@ -1,4 +1,4 @@
-import { IpfsModuleOptions } from '../../lib/ipfs/ipfs.interface';
+import { IpfsModuleOptions } from '../../lib/ipfs';
 import { cleanEnv, str } from 'envalid';
 import { registerAs } from '@nestjs/config';
 

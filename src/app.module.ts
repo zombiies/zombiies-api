@@ -18,7 +18,7 @@ import mongoConfigOption from './config/mongo/mongo.config.option';
 import securityConfigOption from './config/security/security.config.option';
 import { CommandModule } from 'nestjs-command';
 import ipfsConfigOption from './config/ipfs/ipfs.config.option';
-import { IpfsModule } from './lib/ipfs/ipfs.module';
+import { IpfsModule } from './lib/ipfs';
 import { IpfsConfigService } from './config/ipfs/ipfs.config.service';
 import { SettingModule } from './module/setting/setting.module';
 

@@ -1,8 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  IpfsModuleOptions,
-  IpfsModuleOptionsFactory,
-} from '../../lib/ipfs/ipfs.interface';
+import { IpfsModuleOptions, IpfsModuleOptionsFactory } from '../../lib/ipfs';
 import ipfsConfigOption from './ipfs.config.option';
 import { ConfigType } from '@nestjs/config';
 

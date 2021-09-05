@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
-import { InjectIpfsClient } from '../../../lib/ipfs/ipfs.decorator';
+import { InjectIpfsClient, createBlobFromObject } from '../../../lib/ipfs';
 import * as fs from 'fs';
 import { Card } from '../schema/card.schema';
 import { CardService } from '../card.service';
 import { Promise } from 'mongoose';
 import { SettingService } from '../../setting/setting.service';
 import { NFTStorage } from 'nft.storage';
-import { createBlobFromObject } from '../../../lib/ipfs/ipfs.util';
 
 @Injectable()
 export class CardCommand {
