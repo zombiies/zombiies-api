@@ -17,9 +17,9 @@ import { CardModule } from './module/card/card.module';
 import mongoConfigOption from './config/mongo/mongo.config.option';
 import securityConfigOption from './config/security/security.config.option';
 import { CommandModule } from 'nestjs-command';
-import pinataConfigOption from './config/pinata/pinata.config.option';
-import { PinataModule } from './lib/pinata/pinata.module';
-import { PinataConfigService } from './config/pinata/pinata.config.service';
+import ipfsConfigOption from './config/ipfs/ipfs.config.option';
+import { IpfsModule } from './lib/ipfs/ipfs.module';
+import { IpfsConfigService } from './config/ipfs/ipfs.config.service';
 import { SettingModule } from './module/setting/setting.module';
 
 @Module({
@@ -30,7 +30,7 @@ import { SettingModule } from './module/setting/setting.module';
         pubSubConfigOption,
         mongoConfigOption,
         securityConfigOption,
-        pinataConfigOption,
+        ipfsConfigOption,
       ],
       isGlobal: true,
     }),
@@ -43,8 +43,8 @@ import { SettingModule } from './module/setting/setting.module';
     MongooseModule.forRootAsync({
       useClass: MongoConfigService,
     }),
-    PinataModule.forRootAsync({
-      useClass: PinataConfigService,
+    IpfsModule.forRootAsync({
+      useClass: IpfsConfigService,
     }),
     UserModule,
     AuthModule,

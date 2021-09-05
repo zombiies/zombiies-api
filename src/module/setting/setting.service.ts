@@ -12,7 +12,7 @@ export class SettingService {
 
   private static get defaultSetting(): Setting {
     return {
-      factoryIpfsHash: '',
+      cardsFactoryCid: '',
     };
   }
 

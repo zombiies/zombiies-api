@@ -6,7 +6,7 @@ export type SettingDocument = Setting & Document;
 @Schema()
 export class Setting {
   @Prop({ required: true })
-  factoryIpfsHash: string;
+  cardsFactoryCid: string;
 }
 
 export const SettingSchema = SchemaFactory.createForClass(Setting);

@@ -1,64 +1,64 @@
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import {
-  PinataModuleAsyncOptions,
-  PinataModuleOptions,
-  PinataModuleOptionsFactory,
-} from './pinata.interface';
+  IpfsModuleAsyncOptions,
+  IpfsModuleOptions,
+  IpfsModuleOptionsFactory,
+} from './ipfs.interface';
 import {
-  createPinataConnection,
-  getPinataConnectionToken,
-  getPinataOptionsToken,
-} from './pinata.util';
+  createIpfsConnection,
+  getIpfsConnectionToken,
+  getIpfsOptionsToken,
+} from './ipfs.util';
 
 @Global()
 @Module({})
-export class PinataCoreModule {
+export class IpfsCoreModule {
   static forRoot(
-    options: PinataModuleOptions,
+    options: IpfsModuleOptions,
     connection?: string,
   ): DynamicModule {
-    const pinataOptionsProvider: Provider = {
-      provide: getPinataOptionsToken(connection),
+    const ipfsOptionsProvider: Provider = {
+      provide: getIpfsOptionsToken(connection),
       useValue: options,
     };
 
-    const pinataConnectionProvider: Provider = {
-      provide: getPinataConnectionToken(connection),
-      useValue: createPinataConnection(options),
+    const ipfsConnectionProvider: Provider = {
+      provide: getIpfsConnectionToken(connection),
+      useValue: createIpfsConnection(options),
     };
 
     return {
-      module: PinataCoreModule,
-      providers: [pinataOptionsProvider, pinataConnectionProvider],
-      exports: [pinataOptionsProvider, pinataConnectionProvider],
+      module: IpfsCoreModule,
+      providers: [ipfsOptionsProvider, ipfsConnectionProvider],
+      exports: [ipfsOptionsProvider, ipfsConnectionProvider],
     };
   }
 
   static forRootAsync(
-    options: PinataModuleAsyncOptions,
+    options: IpfsModuleAsyncOptions,
     connection: string,
   ): DynamicModule {
-    const pinataConnectionProvider: Provider = {
-      provide: getPinataConnectionToken(connection),
-      useFactory(options: PinataModuleOptions) {
-        return createPinataConnection(options);
+    const ipfsConnectionProvider: Provider = {
+      provide: getIpfsConnectionToken(connection),
+      useFactory(options: IpfsModuleOptions) {
+        return createIpfsConnection(options);
       },
-      inject: [getPinataOptionsToken(connection)],
+      inject: [getIpfsOptionsToken(connection)],
     };
 
     return {
-      module: PinataCoreModule,
+      module: IpfsCoreModule,
       imports: options.imports,
       providers: [
         ...this.createAsyncProviders(options, connection),
-        pinataConnectionProvider,
+        ipfsConnectionProvider,
       ],
-      exports: [pinataConnectionProvider],
+      exports: [ipfsConnectionProvider],
     };
   }
 
   static createAsyncProviders(
-    options: PinataModuleAsyncOptions,
+    options: IpfsModuleAsyncOptions,
     connection?: string,
   ): Provider[] {
     if (!(options.useExisting || options.useFactory || options.useClass)) {
@@ -78,7 +78,7 @@ export class PinataCoreModule {
   }
 
   static createAsyncOptionsProvider(
-    options: PinataModuleAsyncOptions,
+    options: IpfsModuleAsyncOptions,
     connection?: string,
   ): Provider {
     if (!(options.useExisting || options.useFactory || options.useClass)) {
@@ -89,18 +89,18 @@ export class PinataCoreModule {
 
     if (options.useFactory) {
       return {
-        provide: getPinataOptionsToken(connection),
+        provide: getIpfsOptionsToken(connection),
         useFactory: options.useFactory,
         inject: options.inject || [],
       };
     }
 
     return {
-      provide: getPinataOptionsToken(connection),
+      provide: getIpfsOptionsToken(connection),
       async useFactory(
-        optionsFactory: PinataModuleOptionsFactory,
-      ): Promise<PinataModuleOptions> {
-        return optionsFactory.createPinataModuleOptions();
+        optionsFactory: IpfsModuleOptionsFactory,
+      ): Promise<IpfsModuleOptions> {
+        return optionsFactory.createIpfsModuleOptions();
       },
       inject: [options.useClass || options.useExisting],
     };

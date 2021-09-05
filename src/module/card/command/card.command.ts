@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
-import { InjectPinata } from '../../../lib/pinata/pinata.decorator';
-import { PinataClient } from '@pinata/sdk';
+import { InjectIpfsClient } from '../../../lib/ipfs/ipfs.decorator';
 import * as fs from 'fs';
 import { Card } from '../schema/card.schema';
 import { CardService } from '../card.service';
 import { Promise } from 'mongoose';
 import { SettingService } from '../../setting/setting.service';
+import { NFTStorage } from 'nft.storage';
+import { createBlobFromObject } from '../../../lib/ipfs/ipfs.util';
 
 @Injectable()
 export class CardCommand {
   constructor(
-    @InjectPinata() private readonly pinata: PinataClient,
+    @InjectIpfsClient() private readonly ipfsClient: NFTStorage,
     private readonly cardService: CardService,
     private readonly settingService: SettingService,
   ) {}
@@ -24,13 +25,10 @@ export class CardCommand {
     const cardsRaw = fs.readFileSync(__dirname + '/cards-seed.json', 'utf-8');
     const cardsData: Card[] = JSON.parse(cardsRaw);
     await this.cardService.deleteAll();
-    await this.doParallelJob(cardsData, 20, this.doSeed.bind(this));
+    await this.doParallelJob<Card>(cardsData, 50, this.doSeed.bind(this));
+    await this.pinFactory();
   }
 
-  @Command({
-    command: 'card:pin:factory',
-    describe: 'pin factory',
-  })
   async pinFactory() {
     const factoryData = (await this.cardService.getAllCard()).map((card) => {
       const { _id, __v, ...cardAttrs } = card.toObject();
@@ -38,26 +36,19 @@ export class CardCommand {
       return cardAttrs;
     });
 
-    const factoryPin = await this.pinata.pinJSONToIPFS(factoryData, {
-      pinataMetadata: {
-        name: 'Factory',
-        keyvalues: {
-          type: 'FACTORY',
-        } as any,
-      },
-      pinataOptions: {
-        cidVersion: 1,
-      },
-    });
+    const factoryCid = await this.ipfsClient.storeBlob(
+      createBlobFromObject(factoryData),
+    );
+
     await this.settingService.setSetting({
-      factoryIpfsHash: factoryPin.IpfsHash,
+      cardsFactoryCid: factoryCid,
     });
   }
 
-  async doParallelJob(
-    cardsData: Card[],
+  async doParallelJob<T>(
+    cardsData: T[],
     numsOfJob: number,
-    job: (data: Card[], jobIdx: number) => Promise<Card[]>,
+    job: (data: T[], jobIdx: number) => Promise<T[]>,
   ) {
     const numsPerJob = Math.ceil(cardsData.length / numsOfJob);
     const dataChunks = Array.from({ length: numsOfJob }, (_, v) => v).reduce(
@@ -65,7 +56,7 @@ export class CardCommand {
         ...memo,
         cardsData.slice(index * numsPerJob, index * numsPerJob + numsPerJob),
       ],
-      [] as Array<Card[]>,
+      [] as Array<T[]>,
     );
 
     await Promise.all(
@@ -79,21 +70,13 @@ export class CardCommand {
     let count = 0;
 
     for (const cardData of cardsData) {
-      const pin = await this.pinata.pinJSONToIPFS(cardData, {
-        pinataMetadata: {
-          name: `[${cardData.faction}] ${cardData.name}`,
-          keyvalues: {
-            type: 'CARD',
-          } as any,
-        },
-        pinataOptions: {
-          cidVersion: 1,
-        },
-      });
+      const cid = await this.ipfsClient.storeBlob(
+        createBlobFromObject(cardData),
+      );
 
       await this.cardService.createCard({
         ...cardData,
-        ipfsHash: pin.IpfsHash,
+        cid,
       });
 
       count++;

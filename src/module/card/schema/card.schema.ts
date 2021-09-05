@@ -35,10 +35,19 @@ export class Card {
   type: CardType;
 
   @Prop({ required: true, unique: true })
-  ipfsHash: string;
+  cid: string;
 
   @Prop({ required: true })
   levels: CardLevel[];
+
+  @Prop({ required: true })
+  startSeed: number;
+
+  @Prop({ required: true })
+  endSeed: number;
+
+  @Prop({ required: true })
+  totalSeeds: number;
 }
 
 export const CardSchema = SchemaFactory.createForClass(Card);
