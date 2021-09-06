@@ -1,14 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  EthersContract,
-  EthersSigner,
-  SmartContract,
-  WalletSigner,
-} from 'nestjs-ethers';
+import { EthersContract, EthersSigner, WalletSigner } from 'nestjs-ethers';
 import ethersConfigOption from '../../config/ethers/ethers.config.option';
 import { ConfigType } from '@nestjs/config';
 import * as ABI from './abi/ZombiiesToken.json';
 import { AES, enc } from 'crypto-js';
+import { Contract } from './typechain';
 
 @Injectable()
 export class EtherClientService {
@@ -17,14 +13,10 @@ export class EtherClientService {
     private readonly config: ConfigType<typeof ethersConfigOption>,
     private readonly signer: EthersSigner,
     private readonly ethersContract: EthersContract,
-  ) {
-    (async () => {
-      console.log(await this.getContract().getCountToLevelUp());
-    })();
-  }
+  ) {}
 
   private ownerWallet: WalletSigner;
-  private contract: SmartContract;
+  private contract: Contract;
 
   getOwnerWallet(): WalletSigner {
     if (typeof this.ownerWallet === 'undefined') {
@@ -55,13 +47,13 @@ export class EtherClientService {
     ).toString();
   }
 
-  getContract(): SmartContract {
+  getContract(): Contract {
     if (typeof this.contract === 'undefined') {
       this.contract = this.ethersContract.create(
         this.config.contractAddress,
         ABI,
         this.getOwnerWallet(),
-      );
+      ) as Contract;
     }
 
     return this.contract;
