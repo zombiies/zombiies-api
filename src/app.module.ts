@@ -20,11 +20,9 @@ import { CommandModule } from 'nestjs-command';
 import ipfsConfigOption from './config/ipfs/ipfs.config.option';
 import { IpfsStorageModule } from './lib/ipfs-storage';
 import { IpfsConfigService } from './config/ipfs/ipfs.config.service';
-import { SettingModule } from './module/setting/setting.module';
 import ethersConfigOption from './config/ethers/ethers.config.option';
 import { EthersModule } from 'nestjs-ethers';
 import { EtherClientModule } from './module/ether-client/ether-client.module';
-import { RandomModule } from './module/random/random.module';
 
 @Module({
   imports: [
@@ -66,9 +64,7 @@ import { RandomModule } from './module/random/random.module';
     AuthModule,
     CardModule,
     CommandModule,
-    SettingModule,
     EtherClientModule,
-    RandomModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

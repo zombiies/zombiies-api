@@ -4,12 +4,14 @@ import { User, UserDocument } from './schema/user.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EtherClientService } from '../ether-client/ether-client.service';
+import { UserWalletModel } from './model/user-wallet.model';
+import { formatEther } from 'nestjs-ethers';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    private readonly etherClientService: EtherClientService,
+    private readonly ethClient: EtherClientService,
   ) {}
 
   async findOneByEmail(email: string): Promise<UserDocument> {
@@ -31,10 +33,19 @@ export class UserService {
   async create(dto: CreateUserDto): Promise<UserDocument> {
     const createdUser = new this.userModel({
       ...dto,
-      privateKeyCipher:
-        await this.etherClientService.createNewPrivateKeyCipher(),
+      privateKeyCipher: await this.ethClient.createNewPrivateKeyCipher(),
     });
 
     return createdUser.save();
+  }
+
+  async getWalletInfoOf(user: User): Promise<UserWalletModel> {
+    const wallet = this.ethClient.getWalletOfUser(user);
+    const balance = await wallet.getBalance();
+
+    return {
+      address: wallet.address,
+      balance: formatEther(balance),
+    };
   }
 }

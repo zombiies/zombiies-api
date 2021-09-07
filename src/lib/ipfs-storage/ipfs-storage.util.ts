@@ -4,11 +4,10 @@ import {
   IPFS_STORAGE_MODULE_OPTIONS_TOKEN,
 } from './ipfs-storage.constant';
 import { IpfsStorageModuleOptions } from './ipfs-storage.interface';
-import { Web3Storage, File } from 'web3.storage';
-import { Buffer } from 'buffer';
+import { IpfsStorage } from './ipfs-storage';
 
-const createIpfsStorage = ({ token }: IpfsStorageModuleOptions): Web3Storage =>
-  new Web3Storage({ token });
+const createIpfsStorage = ({ token }: IpfsStorageModuleOptions): IpfsStorage =>
+  new IpfsStorage({ token });
 
 export const getIpfsStorageOptionsToken = (connection: string): string =>
   `${
@@ -22,12 +21,6 @@ export const getIpfsStorageConnectionToken = (connection: string): string =>
 
 export const createIpfsConnection = (
   options: IpfsStorageModuleOptions,
-): Web3Storage => {
+): IpfsStorage => {
   return createIpfsStorage(options);
-};
-
-export const makeFileObject = (obj: any, filename = 'data.json') => {
-  const buffer = Buffer.from(JSON.stringify(obj));
-
-  return new File([buffer], filename);
 };

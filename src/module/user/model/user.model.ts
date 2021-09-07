@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { UserWalletModel } from './user-wallet.model';
 
 @ObjectType()
 export class UserModel {
@@ -8,6 +9,7 @@ export class UserModel {
   username: string;
   email: string;
   isVerified: boolean;
-  walletAddress: string;
-  walletBalance: string;
+
+  @Field((type) => UserWalletModel)
+  wallet: UserWalletModel;
 }

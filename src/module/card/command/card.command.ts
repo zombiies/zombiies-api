@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Command, Positional } from 'nestjs-command';
-import { makeFileObject, InjectIpfsStorage } from '../../../lib/ipfs-storage';
+import { InjectIpfsStorage, IpfsStorage } from '../../../lib/ipfs-storage';
 import { Card, CardSkill } from '../schema/card.schema';
 import { CardService } from '../card.service';
 import { Promise } from 'mongoose';
@@ -9,10 +9,8 @@ import { RareLevel } from '../enum/rare-level.enum';
 import { Faction } from '../enum/faction.enum';
 import { CardType } from '../enum/card-type.enum';
 import { EtherClientService } from '../../ether-client/ether-client.service';
-import { Web3Storage } from 'web3.storage';
 import { parseEther } from 'nestjs-ethers';
 import { BigNumber } from 'ethers';
-import { SettingService } from '../../setting/setting.service';
 
 interface CardSeed {
   name: string;
@@ -32,10 +30,9 @@ interface CardSeed {
 @Injectable()
 export class CardCommand {
   constructor(
-    @InjectIpfsStorage() private readonly ipfsClient: Web3Storage,
+    @InjectIpfsStorage() private readonly ipfsStorage: IpfsStorage,
     private readonly cardService: CardService,
     private readonly ethClient: EtherClientService,
-    private readonly setting: SettingService,
   ) {}
 
   @Command({
@@ -69,7 +66,7 @@ export class CardCommand {
       ({ cid }) => cid,
     );
 
-    const uri = await this.ipfsClient.put([makeFileObject(factoryData)]);
+    const uri = await this.ipfsStorage.putObject(factoryData);
 
     await (await this.ethClient.getContract().setFactoryURI(uri)).wait();
   }
@@ -103,7 +100,7 @@ export class CardCommand {
   async doSeed(cardsData: Card[]) {
     for (const cardData of cardsData) {
       try {
-        const hash = await this.ipfsClient.put([makeFileObject(cardData)]);
+        const hash = await this.ipfsStorage.putObject(cardData);
 
         await this.cardService.createCard({
           ...cardData,

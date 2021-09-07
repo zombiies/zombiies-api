@@ -9,34 +9,35 @@ import { FilterQuery, Model } from 'mongoose';
 import { User } from '../user/schema/user.schema';
 import { CardType } from './enum/card-type.enum';
 import { RareLevel, RareLevels } from './enum/rare-level.enum';
-import { InjectIpfsStorage, makeFileObject } from '../../lib/ipfs-storage';
+import { InjectIpfsStorage, IpfsStorage } from '../../lib/ipfs-storage';
 import { getTokenIdsFromReceipt } from '../../util/contract';
 import { EtherClientService } from '../ether-client/ether-client.service';
-import { SettingService } from '../setting/setting.service';
-import { Web3Storage } from 'web3.storage';
-import { RandomService } from '../random/random.service';
 import { BigNumber } from 'ethers';
 import { CardTokenModel } from './model/card-token.model';
 import { ContractToken } from './interface/contract-token.interface';
+import { createRng, nextInt } from '../../util/random';
 
 @Injectable()
 export class CardService {
   constructor(
     @InjectModel(Card.name) private readonly cardModel: Model<CardDocument>,
     private readonly ethClient: EtherClientService,
-    private readonly setting: SettingService,
-    private readonly random: RandomService,
-    @InjectIpfsStorage() private readonly ipfsStorage: Web3Storage,
+    @InjectIpfsStorage() private readonly ipfsStorage: IpfsStorage,
   ) {}
 
-  private _allCards: CardDocument[];
-
   async getAllCard(): Promise<CardDocument[]> {
-    if (typeof this._allCards === 'undefined') {
-      this._allCards = await this.cardModel.find();
-    }
+    return this.cardModel.find().exec();
+  }
 
-    return this._allCards;
+  async getMaxCardSeed(): Promise<number> {
+    const maxSeedCard = await this.cardModel
+      .findOne()
+      .sort({
+        endSeed: -1,
+      })
+      .exec();
+
+    return maxSeedCard.endSeed;
   }
 
   async createCard(params: Card) {
@@ -66,15 +67,21 @@ export class CardService {
     return this.getContract().getStarterPackFee();
   }
 
-  async buyStarterPack(user: User) {
+  async canBuyStarterPack(user: User) {
     const buyerWallet = this.ethClient.getWalletOfUser(user);
     const buyerBalance = await this.getContract().balanceOf(
       buyerWallet.address,
     );
 
-    if (buyerBalance.gt(0)) {
+    return buyerBalance.eq(0);
+  }
+
+  async buyStarterPack(user: User) {
+    if (!(await this.canBuyStarterPack(user))) {
       throw new HttpException('Already bought starter pack', 400);
     }
+
+    const buyerWallet = this.ethClient.getWalletOfUser(user);
 
     const fee = await this.getStarterPackFee();
     const buyTx = await buyerWallet.sendTransaction({
@@ -115,7 +122,7 @@ export class CardService {
         },
       };
 
-      const proofCid = await this.ipfsStorage.put([makeFileObject(proof)]);
+      const proofCid = await this.ipfsStorage.putObject(proof);
       const tokenCids = monsterCards.concat(equipmentCards).map((c) => c.cid);
 
       const buyStarterPackTx = await this.ethClient
@@ -139,20 +146,26 @@ export class CardService {
   async getCardTokensFromToken(
     tokens: ContractToken[],
   ): Promise<CardTokenModel[]> {
-    const allCards = await this.getAllCard();
-
-    return tokens
-      .map(({ id, uri }) => {
-        const card = allCards.find(({ cid }) => cid === uri);
-
-        return card
-          ? {
-              tokenId: id.toHexString(),
-              ...card.toObject(),
-            }
-          : undefined;
+    const tokenCids = tokens.map((token) => token.uri);
+    const cards = await this.cardModel
+      .find({
+        cid: {
+          $in: tokenCids,
+        },
       })
-      .filter((c) => !!c);
+      .exec();
+    const cardsByCidMap = cards.reduce(
+      (memo, current) => ({
+        ...memo,
+        [current.cid]: current,
+      }),
+      {},
+    );
+
+    return tokens.map(({ id, uri }) => ({
+      tokenId: id.toHexString(),
+      ...cardsByCidMap[uri].toObject(),
+    }));
   }
 
   async findCardTokens(ids: BigNumber[]): Promise<CardTokenModel[]> {
@@ -175,7 +188,8 @@ export class CardService {
     maxLevel = 8,
     maxRareLevel = RareLevel.ELITE,
   ) {
-    const rng = this.random.createRng(seed);
+    const rng = createRng(seed);
+    const maxInt = await this.getMaxCardSeed();
     const randoms = [];
     const cards: Card[] = [];
     const acceptRareLevels = RareLevels.slice(
@@ -184,7 +198,7 @@ export class CardService {
     );
 
     do {
-      const ranNum = await this.random.getRandomNumber(rng);
+      const ranNum = nextInt(rng, maxInt);
       const randomCard = await this.findOne({
         startSeed: {
           $lte: ranNum,
@@ -209,7 +223,7 @@ export class CardService {
         value: ranNum,
         take: !!randomCard,
       });
-    } while (cards.length !== count);
+    } while (cards.length < count);
 
     return {
       randoms,

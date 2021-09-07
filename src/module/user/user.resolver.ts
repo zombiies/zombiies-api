@@ -4,12 +4,11 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { UserDocument } from './schema/user.schema';
-import { EtherClientService } from '../ether-client/ether-client.service';
-import { formatEther } from 'nestjs-ethers';
+import { UserService } from './user.service';
 
 @Resolver((of) => UserModel)
 export class UserResolver {
-  constructor(private readonly etherClientService: EtherClientService) {}
+  constructor(private readonly service: UserService) {}
 
   @Query((returns) => UserModel)
   @UseGuards(JwtAuthGuard)
@@ -18,18 +17,7 @@ export class UserResolver {
   }
 
   @ResolveField()
-  walletAddress(@Parent() user: UserDocument) {
-    return this.etherClientService.createWalletFromPrivateKeyCipher(
-      user.privateKeyCipher,
-    ).address;
-  }
-
-  @ResolveField()
-  async walletBalance(@Parent() user: UserDocument) {
-    const balance = await this.etherClientService
-      .createWalletFromPrivateKeyCipher(user.privateKeyCipher)
-      .getBalance();
-
-    return formatEther(balance);
+  async wallet(@Parent() user: UserDocument) {
+    return this.service.getWalletInfoOf(user);
   }
 }

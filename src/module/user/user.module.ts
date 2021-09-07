@@ -4,9 +4,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
 import { UserResolver } from './user.resolver';
 import { EtherClientModule } from '../ether-client/ether-client.module';
+import { UserWalletResolver } from './user-wallet.resolver';
 
 @Module({
-  providers: [UserService, UserResolver],
+  providers: [UserService, UserResolver, UserWalletResolver],
   imports: [
     MongooseModule.forFeature([
       {
