@@ -4,7 +4,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Card, CardSchema } from './schema/card.schema';
 import { CardCommand } from './command/card.command';
 import { CardResolver } from './card.resolver';
+import { EtherClientModule } from '../ether-client/ether-client.module';
 import { SettingModule } from '../setting/setting.module';
+import { RandomModule } from '../random/random.module';
 
 @Module({
   providers: [CardService, CardCommand, CardResolver],
@@ -20,7 +22,10 @@ import { SettingModule } from '../setting/setting.module';
         },
       },
     ]),
+    EtherClientModule,
     SettingModule,
+    RandomModule,
   ],
+  exports: [CardService],
 })
 export class CardModule {}

@@ -37,8 +37,6 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     'name()': FunctionFragment;
     'owner()': FunctionFragment;
     'ownerOf(uint256)': FunctionFragment;
-    'pause()': FunctionFragment;
-    'paused()': FunctionFragment;
     'renounceOwnership()': FunctionFragment;
     'safeTransferFrom(address,address,uint256)': FunctionFragment;
     'setApprovalForAll(address,bool)': FunctionFragment;
@@ -51,11 +49,11 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     'tokenByIndex(uint256)': FunctionFragment;
     'tokenOfOwnerByIndex(address,uint256)': FunctionFragment;
     'tokenURI(uint256)': FunctionFragment;
+    'tokensIn(uint256[])': FunctionFragment;
     'tokensOf(address)': FunctionFragment;
     'totalSupply()': FunctionFragment;
     'transferFrom(address,address,uint256)': FunctionFragment;
     'transferOwnership(address)': FunctionFragment;
-    'unpause()': FunctionFragment;
   };
 
   encodeFunctionData(
@@ -110,8 +108,6 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     functionFragment: 'ownerOf',
     values: [BigNumberish],
   ): string;
-  encodeFunctionData(functionFragment: 'pause', values?: undefined): string;
-  encodeFunctionData(functionFragment: 'paused', values?: undefined): string;
   encodeFunctionData(
     functionFragment: 'renounceOwnership',
     values?: undefined,
@@ -157,6 +153,10 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     functionFragment: 'tokenURI',
     values: [BigNumberish],
   ): string;
+  encodeFunctionData(
+    functionFragment: 'tokensIn',
+    values: [BigNumberish[]],
+  ): string;
   encodeFunctionData(functionFragment: 'tokensOf', values: [string]): string;
   encodeFunctionData(
     functionFragment: 'totalSupply',
@@ -170,7 +170,6 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     functionFragment: 'transferOwnership',
     values: [string],
   ): string;
-  encodeFunctionData(functionFragment: 'unpause', values?: undefined): string;
 
   decodeFunctionResult(functionFragment: 'approve', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'award', data: BytesLike): Result;
@@ -206,8 +205,6 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: 'name', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'owner', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'ownerOf', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'pause', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'paused', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'renounceOwnership',
     data: BytesLike,
@@ -250,6 +247,7 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: 'tokenURI', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'tokensIn', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'tokensOf', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'totalSupply',
@@ -263,7 +261,6 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     functionFragment: 'transferOwnership',
     data: BytesLike,
   ): Result;
-  decodeFunctionResult(functionFragment: 'unpause', data: BytesLike): Result;
 
   events: {
     'Approval(address,address,uint256)': EventFragment;
@@ -275,11 +272,9 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     'FactoryURIChanged(string)': EventFragment;
     'LevelUp(string)': EventFragment;
     'OwnershipTransferred(address,address)': EventFragment;
-    'Paused(address)': EventFragment;
     'StarterPackBought(string)': EventFragment;
     'StarterPackFeeChanged(uint256)': EventFragment;
     'Transfer(address,address,uint256)': EventFragment;
-    'Unpaused(address)': EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: 'Approval'): EventFragment;
@@ -291,11 +286,9 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: 'FactoryURIChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'LevelUp'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'OwnershipTransferred'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'Paused'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'StarterPackBought'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'StarterPackFeeChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'Transfer'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'Unpaused'): EventFragment;
 }
 
 export class ZombiiesToken extends BaseContract {
@@ -414,12 +407,6 @@ export class ZombiiesToken extends BaseContract {
       overrides?: CallOverrides,
     ): Promise<[string]>;
 
-    pause(
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<ContractTransaction>;
-
-    paused(overrides?: CallOverrides): Promise<[boolean]>;
-
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<ContractTransaction>;
@@ -490,7 +477,15 @@ export class ZombiiesToken extends BaseContract {
       overrides?: CallOverrides,
     ): Promise<[string]>;
 
-    tokensOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber[]]>;
+    tokensIn(
+      tokenIds: BigNumberish[],
+      overrides?: CallOverrides,
+    ): Promise<[([BigNumber, string] & { id: BigNumber; uri: string })[]]>;
+
+    tokensOf(
+      owner: string,
+      overrides?: CallOverrides,
+    ): Promise<[([BigNumber, string] & { id: BigNumber; uri: string })[]]>;
 
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -503,10 +498,6 @@ export class ZombiiesToken extends BaseContract {
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<ContractTransaction>;
-
-    unpause(
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<ContractTransaction>;
   };
@@ -580,12 +571,6 @@ export class ZombiiesToken extends BaseContract {
 
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  pause(
-    overrides?: Overrides & { from?: string | Promise<string> },
-  ): Promise<ContractTransaction>;
-
-  paused(overrides?: CallOverrides): Promise<boolean>;
-
   renounceOwnership(
     overrides?: Overrides & { from?: string | Promise<string> },
   ): Promise<ContractTransaction>;
@@ -653,7 +638,15 @@ export class ZombiiesToken extends BaseContract {
 
   tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  tokensOf(owner: string, overrides?: CallOverrides): Promise<BigNumber[]>;
+  tokensIn(
+    tokenIds: BigNumberish[],
+    overrides?: CallOverrides,
+  ): Promise<([BigNumber, string] & { id: BigNumber; uri: string })[]>;
+
+  tokensOf(
+    owner: string,
+    overrides?: CallOverrides,
+  ): Promise<([BigNumber, string] & { id: BigNumber; uri: string })[]>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -666,10 +659,6 @@ export class ZombiiesToken extends BaseContract {
 
   transferOwnership(
     newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
-  ): Promise<ContractTransaction>;
-
-  unpause(
     overrides?: Overrides & { from?: string | Promise<string> },
   ): Promise<ContractTransaction>;
 
@@ -738,10 +727,6 @@ export class ZombiiesToken extends BaseContract {
 
     ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    pause(overrides?: CallOverrides): Promise<void>;
-
-    paused(overrides?: CallOverrides): Promise<boolean>;
-
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
     'safeTransferFrom(address,address,uint256)'(
@@ -804,7 +789,15 @@ export class ZombiiesToken extends BaseContract {
 
     tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    tokensOf(owner: string, overrides?: CallOverrides): Promise<BigNumber[]>;
+    tokensIn(
+      tokenIds: BigNumberish[],
+      overrides?: CallOverrides,
+    ): Promise<([BigNumber, string] & { id: BigNumber; uri: string })[]>;
+
+    tokensOf(
+      owner: string,
+      overrides?: CallOverrides,
+    ): Promise<([BigNumber, string] & { id: BigNumber; uri: string })[]>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -819,8 +812,6 @@ export class ZombiiesToken extends BaseContract {
       newOwner: string,
       overrides?: CallOverrides,
     ): Promise<void>;
-
-    unpause(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -870,8 +861,6 @@ export class ZombiiesToken extends BaseContract {
       { previousOwner: string; newOwner: string }
     >;
 
-    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
-
     StarterPackBought(
       proofURI?: null,
     ): TypedEventFilter<[string], { proofURI: string }>;
@@ -888,8 +877,6 @@ export class ZombiiesToken extends BaseContract {
       [string, string, BigNumber],
       { from: string; to: string; tokenId: BigNumber }
     >;
-
-    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
   };
 
   estimateGas: {
@@ -965,12 +952,6 @@ export class ZombiiesToken extends BaseContract {
       overrides?: CallOverrides,
     ): Promise<BigNumber>;
 
-    pause(
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<BigNumber>;
-
-    paused(overrides?: CallOverrides): Promise<BigNumber>;
-
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<BigNumber>;
@@ -1041,6 +1022,11 @@ export class ZombiiesToken extends BaseContract {
       overrides?: CallOverrides,
     ): Promise<BigNumber>;
 
+    tokensIn(
+      tokenIds: BigNumberish[],
+      overrides?: CallOverrides,
+    ): Promise<BigNumber>;
+
     tokensOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1054,10 +1040,6 @@ export class ZombiiesToken extends BaseContract {
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<BigNumber>;
-
-    unpause(
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<BigNumber>;
   };
@@ -1138,12 +1120,6 @@ export class ZombiiesToken extends BaseContract {
       overrides?: CallOverrides,
     ): Promise<PopulatedTransaction>;
 
-    pause(
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<PopulatedTransaction>;
-
-    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<PopulatedTransaction>;
@@ -1214,6 +1190,11 @@ export class ZombiiesToken extends BaseContract {
       overrides?: CallOverrides,
     ): Promise<PopulatedTransaction>;
 
+    tokensIn(
+      tokenIds: BigNumberish[],
+      overrides?: CallOverrides,
+    ): Promise<PopulatedTransaction>;
+
     tokensOf(
       owner: string,
       overrides?: CallOverrides,
@@ -1230,10 +1211,6 @@ export class ZombiiesToken extends BaseContract {
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<PopulatedTransaction>;
-
-    unpause(
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<PopulatedTransaction>;
   };

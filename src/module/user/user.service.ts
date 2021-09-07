@@ -31,7 +31,8 @@ export class UserService {
   async create(dto: CreateUserDto): Promise<UserDocument> {
     const createdUser = new this.userModel({
       ...dto,
-      privateKeyCipher: this.etherClientService.createNewPrivateKeyCipher(),
+      privateKeyCipher:
+        await this.etherClientService.createNewPrivateKeyCipher(),
     });
 
     return createdUser.save();

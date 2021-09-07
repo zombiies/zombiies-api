@@ -18,12 +18,13 @@ import mongoConfigOption from './config/mongo/mongo.config.option';
 import securityConfigOption from './config/security/security.config.option';
 import { CommandModule } from 'nestjs-command';
 import ipfsConfigOption from './config/ipfs/ipfs.config.option';
-import { IpfsModule } from './lib/ipfs';
+import { IpfsStorageModule } from './lib/ipfs-storage';
 import { IpfsConfigService } from './config/ipfs/ipfs.config.service';
 import { SettingModule } from './module/setting/setting.module';
 import ethersConfigOption from './config/ethers/ethers.config.option';
 import { EthersModule } from 'nestjs-ethers';
 import { EtherClientModule } from './module/ether-client/ether-client.module';
+import { RandomModule } from './module/random/random.module';
 
 @Module({
   imports: [
@@ -47,18 +48,17 @@ import { EtherClientModule } from './module/ether-client/ether-client.module';
     MongooseModule.forRootAsync({
       useClass: MongoConfigService,
     }),
-    IpfsModule.forRootAsync({
+    IpfsStorageModule.forRootAsync({
       useClass: IpfsConfigService,
     }),
     EthersModule.forRootAsync({
       providers: [ConfigService],
       inject: [ethersConfigOption.KEY],
       useFactory: (ethersConfig: ConfigType<typeof ethersConfigOption>) => {
-        const { network, alchemyApiKey } = ethersConfig;
+        const { network } = ethersConfig;
 
         return {
           network: network,
-          alchemy: alchemyApiKey,
         };
       },
     }),
@@ -68,6 +68,7 @@ import { EtherClientModule } from './module/ether-client/ether-client.module';
     CommandModule,
     SettingModule,
     EtherClientModule,
+    RandomModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

@@ -7,7 +7,7 @@ import {
 import { ApolloError } from 'apollo-server-express';
 
 @Catch(HttpException)
-export class AllExceptionFilter implements ExceptionFilter {
+export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, _host: ArgumentsHost): any {
     const { message } = exception;
     const exceptionResponse: any = exception.getResponse();

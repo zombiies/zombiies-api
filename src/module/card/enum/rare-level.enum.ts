@@ -11,3 +11,11 @@ export enum RareLevel {
 registerEnumType(RareLevel, {
   name: 'RareLevel',
 });
+
+export const RareLevels = [
+  RareLevel.COMMON,
+  RareLevel.RARE,
+  RareLevel.EPIC,
+  RareLevel.LEGENDARY,
+  RareLevel.ELITE,
+];

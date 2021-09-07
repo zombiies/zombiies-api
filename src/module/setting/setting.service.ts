@@ -12,7 +12,7 @@ export class SettingService {
 
   private static get defaultSetting(): Setting {
     return {
-      cardsFactoryCid: '',
+      maxRandomValue: 20798440000,
     };
   }
 
@@ -20,14 +20,18 @@ export class SettingService {
     const settings: Setting[] = await this.settingModel.find();
 
     if (settings.length > 0) {
-      return settings[0];
+      return {
+        ...SettingService.defaultSetting,
+        ...settings[0],
+      };
     }
 
     return SettingService.defaultSetting;
   }
 
-  async setSetting(options: Setting): Promise<Setting> {
+  async setSetting(options: Partial<Setting>): Promise<Setting> {
     const oldSettings = await this.getSetting();
+
     await this.settingModel.deleteMany();
     const newSetting = new this.settingModel({
       ...oldSettings,

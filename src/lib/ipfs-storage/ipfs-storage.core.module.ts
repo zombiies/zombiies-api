@@ -1,64 +1,64 @@
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import {
-  IpfsModuleAsyncOptions,
-  IpfsModuleOptions,
-  IpfsModuleOptionsFactory,
-} from './ipfs.interface';
+  IpfsStorageModuleAsyncOptions,
+  IpfsStorageModuleOptions,
+  IpfsStorageModuleOptionsFactory,
+} from './ipfs-storage.interface';
 import {
   createIpfsConnection,
-  getIpfsConnectionToken,
-  getIpfsOptionsToken,
-} from './ipfs.util';
+  getIpfsStorageConnectionToken,
+  getIpfsStorageOptionsToken,
+} from './ipfs-storage.util';
 
 @Global()
 @Module({})
-export class IpfsCoreModule {
+export class IpfsStorageCoreModule {
   static forRoot(
-    options: IpfsModuleOptions,
+    options: IpfsStorageModuleOptions,
     connection?: string,
   ): DynamicModule {
-    const ipfsOptionsProvider: Provider = {
-      provide: getIpfsOptionsToken(connection),
+    const ipfsStorageOptionsProvider: Provider = {
+      provide: getIpfsStorageOptionsToken(connection),
       useValue: options,
     };
 
     const ipfsConnectionProvider: Provider = {
-      provide: getIpfsConnectionToken(connection),
+      provide: getIpfsStorageConnectionToken(connection),
       useValue: createIpfsConnection(options),
     };
 
     return {
-      module: IpfsCoreModule,
-      providers: [ipfsOptionsProvider, ipfsConnectionProvider],
-      exports: [ipfsOptionsProvider, ipfsConnectionProvider],
+      module: IpfsStorageCoreModule,
+      providers: [ipfsStorageOptionsProvider, ipfsConnectionProvider],
+      exports: [ipfsStorageOptionsProvider, ipfsConnectionProvider],
     };
   }
 
   static forRootAsync(
-    options: IpfsModuleAsyncOptions,
+    options: IpfsStorageModuleAsyncOptions,
     connection: string,
   ): DynamicModule {
-    const ipfsConnectionProvider: Provider = {
-      provide: getIpfsConnectionToken(connection),
-      useFactory(options: IpfsModuleOptions) {
+    const ipfsStorageConnectionProvider: Provider = {
+      provide: getIpfsStorageConnectionToken(connection),
+      useFactory(options: IpfsStorageModuleOptions) {
         return createIpfsConnection(options);
       },
-      inject: [getIpfsOptionsToken(connection)],
+      inject: [getIpfsStorageOptionsToken(connection)],
     };
 
     return {
-      module: IpfsCoreModule,
+      module: IpfsStorageCoreModule,
       imports: options.imports,
       providers: [
         ...this.createAsyncProviders(options, connection),
-        ipfsConnectionProvider,
+        ipfsStorageConnectionProvider,
       ],
-      exports: [ipfsConnectionProvider],
+      exports: [ipfsStorageConnectionProvider],
     };
   }
 
   static createAsyncProviders(
-    options: IpfsModuleAsyncOptions,
+    options: IpfsStorageModuleAsyncOptions,
     connection?: string,
   ): Provider[] {
     if (!(options.useExisting || options.useFactory || options.useClass)) {
@@ -78,7 +78,7 @@ export class IpfsCoreModule {
   }
 
   static createAsyncOptionsProvider(
-    options: IpfsModuleAsyncOptions,
+    options: IpfsStorageModuleAsyncOptions,
     connection?: string,
   ): Provider {
     if (!(options.useExisting || options.useFactory || options.useClass)) {
@@ -89,18 +89,18 @@ export class IpfsCoreModule {
 
     if (options.useFactory) {
       return {
-        provide: getIpfsOptionsToken(connection),
+        provide: getIpfsStorageOptionsToken(connection),
         useFactory: options.useFactory,
         inject: options.inject || [],
       };
     }
 
     return {
-      provide: getIpfsOptionsToken(connection),
+      provide: getIpfsStorageOptionsToken(connection),
       async useFactory(
-        optionsFactory: IpfsModuleOptionsFactory,
-      ): Promise<IpfsModuleOptions> {
-        return optionsFactory.createIpfsModuleOptions();
+        optionsFactory: IpfsStorageModuleOptionsFactory,
+      ): Promise<IpfsStorageModuleOptions> {
+        return optionsFactory.createIpfsStorageModuleOptions();
       },
       inject: [options.useClass || options.useExisting],
     };
