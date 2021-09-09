@@ -1,11 +1,13 @@
 import {
+  BadRequestException,
+  ForbiddenException,
   HttpException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Card, CardDocument } from './schema/card.schema';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Promise } from 'mongoose';
 import { User } from '../user/schema/user.schema';
 import { CardType } from './enum/card-type.enum';
 import { RareLevel, RareLevels } from './enum/rare-level.enum';
@@ -16,6 +18,7 @@ import { BigNumber } from 'ethers';
 import { CardTokenModel } from './model/card-token.model';
 import { ContractToken } from './interface/contract-token.interface';
 import { createRng, nextInt } from '../../util/random';
+import { allStringsEqual } from '../../util/string';
 
 @Injectable()
 export class CardService {
@@ -63,8 +66,71 @@ export class CardService {
     return this.cardModel.findOne(query).exec();
   }
 
-  async findMany(query: FilterQuery<CardDocument>) {
-    return this.cardModel.find(query).exec();
+  async getNextLevelCard(card: CardTokenModel) {
+    const { level, name } = card;
+
+    return this.cardModel
+      .findOne({
+        level: level + 1,
+        name,
+      })
+      .exec();
+  }
+
+  async levelUpCard(user: User, sacrificeTokenIds: BigNumber[]) {
+    const userWallet = this.ethClient.getWalletOfUser(user);
+
+    await Promise.all(
+      sacrificeTokenIds.map(async (id) => {
+        if (!(await this.ethClient.isOwnerOf(userWallet.address, id))) {
+          throw new ForbiddenException(
+            `You do not have permission with this token`,
+          );
+        }
+      }),
+    );
+
+    const sacrificeCards = await this.findCardTokens(sacrificeTokenIds);
+
+    if (sacrificeCards.length !== 2) {
+      throw new BadRequestException('Must combine two cards to level up');
+    }
+
+    if (!allStringsEqual(...sacrificeCards.map((c) => c.cid))) {
+      throw new BadRequestException('All sacrifice cards must be same');
+    }
+
+    const nextLevelCard = await this.getNextLevelCard(sacrificeCards[0]);
+
+    if (!nextLevelCard) {
+      throw new BadRequestException('Can not level up these cards');
+    }
+
+    const proof = {
+      sacrificeTokenIds,
+      nextLevelCardCid: nextLevelCard.cid,
+    };
+    const proofCid = await this.ipfsStorage.putObject(proof);
+
+    const tx = await this.contract.levelUp(
+      userWallet.address,
+      sacrificeTokenIds,
+      nextLevelCard.cid,
+      proofCid,
+    );
+    const receipt = await tx.wait();
+    const newTokenId = getTokenIdsFromReceipt(
+      receipt,
+      (_from, to) => to === userWallet.address,
+    )[0];
+
+    const nextLevelCardToken = await this.findOneCardToken(newTokenId);
+
+    if (!nextLevelCardToken) {
+      throw new InternalServerErrorException('Unknown error, please try later');
+    }
+
+    return nextLevelCardToken;
   }
 
   async getStarterPackFee() {
@@ -176,6 +242,12 @@ export class CardService {
     const tokens = await this.contract.tokensIn(ids);
 
     return this.getCardTokensFromToken(tokens);
+  }
+
+  async findOneCardToken(id: BigNumber): Promise<CardTokenModel | undefined> {
+    const tokens = await this.findCardTokens([id]);
+
+    return tokens[0];
   }
 
   async getCardTokensOfUser(user: User) {
