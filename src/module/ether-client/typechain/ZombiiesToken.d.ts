@@ -13,282 +13,271 @@ import {
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from 'ethers';
-import { BytesLike } from '@ethersproject/bytes';
-import { Listener, Provider } from '@ethersproject/providers';
-import { FunctionFragment, EventFragment, Result } from '@ethersproject/abi';
-import { TypedEventFilter, TypedEvent, TypedListener } from './commons';
+} from "ethers";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ZombiiesTokenInterface extends ethers.utils.Interface {
   functions: {
-    'approve(address,uint256)': FunctionFragment;
-    'award(address,string,string)': FunctionFragment;
-    'balanceOf(address)': FunctionFragment;
-    'burn(uint256)': FunctionFragment;
-    'buyStarterPack(address,string[],string)': FunctionFragment;
-    'endAuction(address,uint256,string)': FunctionFragment;
-    'getApproved(uint256)': FunctionFragment;
-    'getCountToLevelUp()': FunctionFragment;
-    'getFactoryURI()': FunctionFragment;
-    'getStarterPackFee()': FunctionFragment;
-    'initialize()': FunctionFragment;
-    'isApprovedForAll(address,address)': FunctionFragment;
-    'levelUp(address,uint256[],string,string)': FunctionFragment;
-    'name()': FunctionFragment;
-    'owner()': FunctionFragment;
-    'ownerOf(uint256)': FunctionFragment;
-    'renounceOwnership()': FunctionFragment;
-    'safeTransferFrom(address,address,uint256)': FunctionFragment;
-    'setApprovalForAll(address,bool)': FunctionFragment;
-    'setCountToLevelUp(uint8)': FunctionFragment;
-    'setFactoryURI(string)': FunctionFragment;
-    'setStarterPackFee(uint256)': FunctionFragment;
-    'startAuction(address,uint256,string)': FunctionFragment;
-    'supportsInterface(bytes4)': FunctionFragment;
-    'symbol()': FunctionFragment;
-    'tokenByIndex(uint256)': FunctionFragment;
-    'tokenOfOwnerByIndex(address,uint256)': FunctionFragment;
-    'tokenURI(uint256)': FunctionFragment;
-    'tokensIn(uint256[])': FunctionFragment;
-    'tokensOf(address)': FunctionFragment;
-    'totalSupply()': FunctionFragment;
-    'transferFrom(address,address,uint256)': FunctionFragment;
-    'transferOwnership(address)': FunctionFragment;
+    "approve(address,uint256)": FunctionFragment;
+    "award(address,string,string)": FunctionFragment;
+    "balanceOf(address)": FunctionFragment;
+    "burn(uint256)": FunctionFragment;
+    "buyStarterPack(address,string[],string)": FunctionFragment;
+    "endAuction(address,uint256,string)": FunctionFragment;
+    "getApproved(uint256)": FunctionFragment;
+    "getCountToLevelUp()": FunctionFragment;
+    "getFactoryURI()": FunctionFragment;
+    "getStarterPackFee()": FunctionFragment;
+    "initialize()": FunctionFragment;
+    "isApprovedForAll(address,address)": FunctionFragment;
+    "levelUp(address,uint256[],string,string)": FunctionFragment;
+    "name()": FunctionFragment;
+    "owner()": FunctionFragment;
+    "ownerOf(uint256)": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
+    "safeTransferFrom(address,address,uint256)": FunctionFragment;
+    "setApprovalForAll(address,bool)": FunctionFragment;
+    "setCountToLevelUp(uint8)": FunctionFragment;
+    "setFactoryURI(string)": FunctionFragment;
+    "setStarterPackFee(uint256)": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
+    "symbol()": FunctionFragment;
+    "tokenByIndex(uint256)": FunctionFragment;
+    "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
+    "tokenURI(uint256)": FunctionFragment;
+    "tokensIn(uint256[])": FunctionFragment;
+    "tokensOf(address)": FunctionFragment;
+    "totalSupply()": FunctionFragment;
+    "transferFrom(address,address,uint256)": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: 'approve',
-    values: [string, BigNumberish],
+    functionFragment: "approve",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'award',
-    values: [string, string, string],
+    functionFragment: "award",
+    values: [string, string, string]
   ): string;
-  encodeFunctionData(functionFragment: 'balanceOf', values: [string]): string;
-  encodeFunctionData(functionFragment: 'burn', values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(
-    functionFragment: 'buyStarterPack',
-    values: [string, string[], string],
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'endAuction',
-    values: [string, BigNumberish, string],
+    functionFragment: "buyStarterPack",
+    values: [string, string[], string]
   ): string;
   encodeFunctionData(
-    functionFragment: 'getApproved',
-    values: [BigNumberish],
+    functionFragment: "endAuction",
+    values: [string, BigNumberish, string]
   ): string;
   encodeFunctionData(
-    functionFragment: 'getCountToLevelUp',
-    values?: undefined,
+    functionFragment: "getApproved",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'getFactoryURI',
-    values?: undefined,
+    functionFragment: "getCountToLevelUp",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: 'getStarterPackFee',
-    values?: undefined,
+    functionFragment: "getFactoryURI",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: 'initialize',
-    values?: undefined,
+    functionFragment: "getStarterPackFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: 'isApprovedForAll',
-    values: [string, string],
+    functionFragment: "initialize",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: 'levelUp',
-    values: [string, BigNumberish[], string, string],
-  ): string;
-  encodeFunctionData(functionFragment: 'name', values?: undefined): string;
-  encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: 'ownerOf',
-    values: [BigNumberish],
+    functionFragment: "isApprovedForAll",
+    values: [string, string]
   ): string;
   encodeFunctionData(
-    functionFragment: 'renounceOwnership',
-    values?: undefined,
+    functionFragment: "levelUp",
+    values: [string, BigNumberish[], string, string]
+  ): string;
+  encodeFunctionData(functionFragment: "name", values?: undefined): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "ownerOf",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'safeTransferFrom',
-    values: [string, string, BigNumberish],
+    functionFragment: "renounceOwnership",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: 'setApprovalForAll',
-    values: [string, boolean],
+    functionFragment: "safeTransferFrom",
+    values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'setCountToLevelUp',
-    values: [BigNumberish],
+    functionFragment: "setApprovalForAll",
+    values: [string, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: 'setFactoryURI',
-    values: [string],
+    functionFragment: "setCountToLevelUp",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'setStarterPackFee',
-    values: [BigNumberish],
+    functionFragment: "setFactoryURI",
+    values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: 'startAuction',
-    values: [string, BigNumberish, string],
+    functionFragment: "setStarterPackFee",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'supportsInterface',
-    values: [BytesLike],
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: 'symbol', values?: undefined): string;
+  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: 'tokenByIndex',
-    values: [BigNumberish],
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'tokenOfOwnerByIndex',
-    values: [string, BigNumberish],
+    functionFragment: "tokenByIndex",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'tokenURI',
-    values: [BigNumberish],
+    functionFragment: "tokenOfOwnerByIndex",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'tokensIn',
-    values: [BigNumberish[]],
-  ): string;
-  encodeFunctionData(functionFragment: 'tokensOf', values: [string]): string;
-  encodeFunctionData(
-    functionFragment: 'totalSupply',
-    values?: undefined,
+    functionFragment: "tokenURI",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: 'transferFrom',
-    values: [string, string, BigNumberish],
+    functionFragment: "tokensIn",
+    values: [BigNumberish[]]
+  ): string;
+  encodeFunctionData(functionFragment: "tokensOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: 'transferOwnership',
-    values: [string],
+    functionFragment: "transferFrom",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
   ): string;
 
-  decodeFunctionResult(functionFragment: 'approve', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'award', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'balanceOf', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'burn', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "award", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: 'buyStarterPack',
-    data: BytesLike,
+    functionFragment: "buyStarterPack",
+    data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: 'endAuction', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "endAuction", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: 'getApproved',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'getCountToLevelUp',
-    data: BytesLike,
+    functionFragment: "getApproved",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'getFactoryURI',
-    data: BytesLike,
+    functionFragment: "getCountToLevelUp",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'getStarterPackFee',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(functionFragment: 'initialize', data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: 'isApprovedForAll',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(functionFragment: 'levelUp', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'name', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'owner', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'ownerOf', data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: 'renounceOwnership',
-    data: BytesLike,
+    functionFragment: "getFactoryURI",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'safeTransferFrom',
-    data: BytesLike,
+    functionFragment: "getStarterPackFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isApprovedForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "levelUp", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'setApprovalForAll',
-    data: BytesLike,
+    functionFragment: "safeTransferFrom",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'setCountToLevelUp',
-    data: BytesLike,
+    functionFragment: "setApprovalForAll",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'setFactoryURI',
-    data: BytesLike,
+    functionFragment: "setCountToLevelUp",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'setStarterPackFee',
-    data: BytesLike,
+    functionFragment: "setFactoryURI",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'startAuction',
-    data: BytesLike,
+    functionFragment: "setStarterPackFee",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'supportsInterface',
-    data: BytesLike,
+    functionFragment: "supportsInterface",
+    data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: 'symbol', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: 'tokenByIndex',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'tokenOfOwnerByIndex',
-    data: BytesLike,
-  ): Result;
-  decodeFunctionResult(functionFragment: 'tokenURI', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'tokensIn', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'tokensOf', data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: 'totalSupply',
-    data: BytesLike,
+    functionFragment: "tokenByIndex",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'transferFrom',
-    data: BytesLike,
+    functionFragment: "tokenOfOwnerByIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokensIn", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokensOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: 'transferOwnership',
-    data: BytesLike,
+    functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
   ): Result;
 
   events: {
-    'Approval(address,address,uint256)': EventFragment;
-    'ApprovalForAll(address,address,bool)': EventFragment;
-    'AuctionEnded(string)': EventFragment;
-    'AuctionStarted(string)': EventFragment;
-    'Awarded(string)': EventFragment;
-    'CountToLevelUpChanged(uint256)': EventFragment;
-    'FactoryURIChanged(string)': EventFragment;
-    'LevelUp(string)': EventFragment;
-    'OwnershipTransferred(address,address)': EventFragment;
-    'StarterPackBought(string)': EventFragment;
-    'StarterPackFeeChanged(uint256)': EventFragment;
-    'Transfer(address,address,uint256)': EventFragment;
+    "Approval(address,address,uint256)": EventFragment;
+    "ApprovalForAll(address,address,bool)": EventFragment;
+    "AuctionEnded(string)": EventFragment;
+    "Awarded(string)": EventFragment;
+    "CountToLevelUpChanged(uint256)": EventFragment;
+    "FactoryURIChanged(string)": EventFragment;
+    "LevelUp(string)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
+    "StarterPackBought(string)": EventFragment;
+    "StarterPackFeeChanged(uint256)": EventFragment;
+    "Transfer(address,address,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: 'Approval'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'ApprovalForAll'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'AuctionEnded'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'AuctionStarted'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'Awarded'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'CountToLevelUpChanged'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'FactoryURIChanged'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'LevelUp'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'OwnershipTransferred'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'StarterPackBought'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'StarterPackFeeChanged'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'Transfer'): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AuctionEnded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Awarded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "CountToLevelUpChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "FactoryURIChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LevelUp"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StarterPackBought"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StarterPackFeeChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
 export class ZombiiesToken extends BaseContract {
@@ -297,26 +286,26 @@ export class ZombiiesToken extends BaseContract {
   deployed(): Promise<this>;
 
   listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   on<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   once<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): this;
 
   listeners(eventName?: string): Array<Listener>;
@@ -329,7 +318,7 @@ export class ZombiiesToken extends BaseContract {
   queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
     event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined,
+    toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: ZombiiesTokenInterface;
@@ -338,40 +327,40 @@ export class ZombiiesToken extends BaseContract {
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     award(
       to: string,
       tokenURI: string,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     burn(
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     buyStarterPack(
       to: string,
       tokenURIs: string[],
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     endAuction(
       winner: string,
       tokenId: BigNumberish,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     getApproved(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[string]>;
 
     getCountToLevelUp(overrides?: CallOverrides): Promise<[number]>;
@@ -381,13 +370,13 @@ export class ZombiiesToken extends BaseContract {
     getStarterPackFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     initialize(
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     isApprovedForAll(
       owner: string,
       operator: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[boolean]>;
 
     levelUp(
@@ -395,7 +384,7 @@ export class ZombiiesToken extends BaseContract {
       sacrificesIds: BigNumberish[],
       newTokenURI: string,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
@@ -404,87 +393,80 @@ export class ZombiiesToken extends BaseContract {
 
     ownerOf(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[string]>;
 
     renounceOwnership(
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    'safeTransferFrom(address,address,uint256)'(
+    "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    'safeTransferFrom(address,address,uint256,bytes)'(
+    "safeTransferFrom(address,address,uint256,bytes)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setCountToLevelUp(
       newCount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setFactoryURI(
       newURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setStarterPackFee(
       newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<ContractTransaction>;
-
-    startAuction(
-      from: string,
-      tokenId: BigNumberish,
-      proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     supportsInterface(
       interfaceId: BytesLike,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[boolean]>;
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
     tokenByIndex(
       index: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
     tokenOfOwnerByIndex(
       owner: string,
       index: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
     tokenURI(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[string]>;
 
     tokensIn(
       tokenIds: BigNumberish[],
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[([BigNumber, string] & { id: BigNumber; uri: string })[]]>;
 
     tokensOf(
       owner: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[([BigNumber, string] & { id: BigNumber; uri: string })[]]>;
 
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -493,52 +475,52 @@ export class ZombiiesToken extends BaseContract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
   approve(
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   award(
     to: string,
     tokenURI: string,
     proofURI: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   burn(
     tokenId: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   buyStarterPack(
     to: string,
     tokenURIs: string[],
     proofURI: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   endAuction(
     winner: string,
     tokenId: BigNumberish,
     proofURI: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   getApproved(
     tokenId: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<string>;
 
   getCountToLevelUp(overrides?: CallOverrides): Promise<number>;
@@ -548,13 +530,13 @@ export class ZombiiesToken extends BaseContract {
   getStarterPackFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   initialize(
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   isApprovedForAll(
     owner: string,
     operator: string,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<boolean>;
 
   levelUp(
@@ -562,7 +544,7 @@ export class ZombiiesToken extends BaseContract {
     sacrificesIds: BigNumberish[],
     newTokenURI: string,
     proofURI: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   name(overrides?: CallOverrides): Promise<string>;
@@ -572,80 +554,73 @@ export class ZombiiesToken extends BaseContract {
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   renounceOwnership(
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  'safeTransferFrom(address,address,uint256)'(
+  "safeTransferFrom(address,address,uint256)"(
     from: string,
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  'safeTransferFrom(address,address,uint256,bytes)'(
+  "safeTransferFrom(address,address,uint256,bytes)"(
     from: string,
     to: string,
     tokenId: BigNumberish,
     _data: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setApprovalForAll(
     operator: string,
     approved: boolean,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setCountToLevelUp(
     newCount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setFactoryURI(
     newURI: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setStarterPackFee(
     newFee: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
-  ): Promise<ContractTransaction>;
-
-  startAuction(
-    from: string,
-    tokenId: BigNumberish,
-    proofURI: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   supportsInterface(
     interfaceId: BytesLike,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<boolean>;
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
   tokenByIndex(
     index: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   tokenOfOwnerByIndex(
     owner: string,
     index: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   tokensIn(
     tokenIds: BigNumberish[],
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<([BigNumber, string] & { id: BigNumber; uri: string })[]>;
 
   tokensOf(
     owner: string,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<([BigNumber, string] & { id: BigNumber; uri: string })[]>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
@@ -654,26 +629,26 @@ export class ZombiiesToken extends BaseContract {
     from: string,
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   transferOwnership(
     newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     award(
       to: string,
       tokenURI: string,
       proofURI: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -684,19 +659,19 @@ export class ZombiiesToken extends BaseContract {
       to: string,
       tokenURIs: string[],
       proofURI: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     endAuction(
       winner: string,
       tokenId: BigNumberish,
       proofURI: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     getApproved(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<string>;
 
     getCountToLevelUp(overrides?: CallOverrides): Promise<number>;
@@ -710,7 +685,7 @@ export class ZombiiesToken extends BaseContract {
     isApprovedForAll(
       owner: string,
       operator: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<boolean>;
 
     levelUp(
@@ -718,7 +693,7 @@ export class ZombiiesToken extends BaseContract {
       sacrificesIds: BigNumberish[],
       newTokenURI: string,
       proofURI: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     name(overrides?: CallOverrides): Promise<string>;
@@ -729,74 +704,67 @@ export class ZombiiesToken extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
-    'safeTransferFrom(address,address,uint256)'(
+    "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
-    'safeTransferFrom(address,address,uint256,bytes)'(
+    "safeTransferFrom(address,address,uint256,bytes)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     setCountToLevelUp(
       newCount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     setFactoryURI(newURI: string, overrides?: CallOverrides): Promise<void>;
 
     setStarterPackFee(
       newFee: BigNumberish,
-      overrides?: CallOverrides,
-    ): Promise<void>;
-
-    startAuction(
-      from: string,
-      tokenId: BigNumberish,
-      proofURI: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     supportsInterface(
       interfaceId: BytesLike,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<boolean>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
     tokenByIndex(
       index: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokenOfOwnerByIndex(
       owner: string,
       index: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
     tokensIn(
       tokenIds: BigNumberish[],
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<([BigNumber, string] & { id: BigNumber; uri: string })[]>;
 
     tokensOf(
       owner: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<([BigNumber, string] & { id: BigNumber; uri: string })[]>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
@@ -805,12 +773,12 @@ export class ZombiiesToken extends BaseContract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
   };
 
@@ -818,7 +786,7 @@ export class ZombiiesToken extends BaseContract {
     Approval(
       owner?: string | null,
       approved?: string | null,
-      tokenId?: BigNumberish | null,
+      tokenId?: BigNumberish | null
     ): TypedEventFilter<
       [string, string, BigNumber],
       { owner: string; approved: string; tokenId: BigNumber }
@@ -827,52 +795,48 @@ export class ZombiiesToken extends BaseContract {
     ApprovalForAll(
       owner?: string | null,
       operator?: string | null,
-      approved?: null,
+      approved?: null
     ): TypedEventFilter<
       [string, string, boolean],
       { owner: string; operator: string; approved: boolean }
     >;
 
     AuctionEnded(
-      proofURI?: null,
-    ): TypedEventFilter<[string], { proofURI: string }>;
-
-    AuctionStarted(
-      proofURI?: null,
+      proofURI?: null
     ): TypedEventFilter<[string], { proofURI: string }>;
 
     Awarded(proofURI?: null): TypedEventFilter<[string], { proofURI: string }>;
 
     CountToLevelUpChanged(
-      newCount?: null,
+      newCount?: null
     ): TypedEventFilter<[BigNumber], { newCount: BigNumber }>;
 
     FactoryURIChanged(
-      newURI?: null,
+      newURI?: null
     ): TypedEventFilter<[string], { newURI: string }>;
 
     LevelUp(proofURI?: null): TypedEventFilter<[string], { proofURI: string }>;
 
     OwnershipTransferred(
       previousOwner?: string | null,
-      newOwner?: string | null,
+      newOwner?: string | null
     ): TypedEventFilter<
       [string, string],
       { previousOwner: string; newOwner: string }
     >;
 
     StarterPackBought(
-      proofURI?: null,
+      proofURI?: null
     ): TypedEventFilter<[string], { proofURI: string }>;
 
     StarterPackFeeChanged(
-      newFee?: null,
+      newFee?: null
     ): TypedEventFilter<[BigNumber], { newFee: BigNumber }>;
 
     Transfer(
       from?: string | null,
       to?: string | null,
-      tokenId?: BigNumberish | null,
+      tokenId?: BigNumberish | null
     ): TypedEventFilter<
       [string, string, BigNumber],
       { from: string; to: string; tokenId: BigNumber }
@@ -883,40 +847,40 @@ export class ZombiiesToken extends BaseContract {
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     award(
       to: string,
       tokenURI: string,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     burn(
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     buyStarterPack(
       to: string,
       tokenURIs: string[],
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     endAuction(
       winner: string,
       tokenId: BigNumberish,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getApproved(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getCountToLevelUp(overrides?: CallOverrides): Promise<BigNumber>;
@@ -926,13 +890,13 @@ export class ZombiiesToken extends BaseContract {
     getStarterPackFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     isApprovedForAll(
       owner: string,
       operator: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     levelUp(
@@ -940,7 +904,7 @@ export class ZombiiesToken extends BaseContract {
       sacrificesIds: BigNumberish[],
       newTokenURI: string,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
@@ -949,82 +913,75 @@ export class ZombiiesToken extends BaseContract {
 
     ownerOf(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     renounceOwnership(
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    'safeTransferFrom(address,address,uint256)'(
+    "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    'safeTransferFrom(address,address,uint256,bytes)'(
+    "safeTransferFrom(address,address,uint256,bytes)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setCountToLevelUp(
       newCount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setFactoryURI(
       newURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setStarterPackFee(
       newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<BigNumber>;
-
-    startAuction(
-      from: string,
-      tokenId: BigNumberish,
-      proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     supportsInterface(
       interfaceId: BytesLike,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
     tokenByIndex(
       index: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokenOfOwnerByIndex(
       owner: string,
       index: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokenURI(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokensIn(
       tokenIds: BigNumberish[],
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokensOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -1035,12 +992,12 @@ export class ZombiiesToken extends BaseContract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -1048,43 +1005,43 @@ export class ZombiiesToken extends BaseContract {
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     award(
       to: string,
       tokenURI: string,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     balanceOf(
       owner: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     burn(
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     buyStarterPack(
       to: string,
       tokenURIs: string[],
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     endAuction(
       winner: string,
       tokenId: BigNumberish,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getApproved(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getCountToLevelUp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1094,13 +1051,13 @@ export class ZombiiesToken extends BaseContract {
     getStarterPackFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initialize(
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     isApprovedForAll(
       owner: string,
       operator: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     levelUp(
@@ -1108,7 +1065,7 @@ export class ZombiiesToken extends BaseContract {
       sacrificesIds: BigNumberish[],
       newTokenURI: string,
       proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1117,87 +1074,80 @@ export class ZombiiesToken extends BaseContract {
 
     ownerOf(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     renounceOwnership(
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    'safeTransferFrom(address,address,uint256)'(
+    "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    'safeTransferFrom(address,address,uint256,bytes)'(
+    "safeTransferFrom(address,address,uint256,bytes)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setCountToLevelUp(
       newCount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setFactoryURI(
       newURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setStarterPackFee(
       newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<PopulatedTransaction>;
-
-    startAuction(
-      from: string,
-      tokenId: BigNumberish,
-      proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     supportsInterface(
       interfaceId: BytesLike,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     tokenByIndex(
       index: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     tokenOfOwnerByIndex(
       owner: string,
       index: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     tokenURI(
       tokenId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     tokensIn(
       tokenIds: BigNumberish[],
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     tokensOf(
       owner: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1206,12 +1156,12 @@ export class ZombiiesToken extends BaseContract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

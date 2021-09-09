@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { UserRole } from '../enum/user-role.enum';
 
 export type UserDocument = User & Document;
 
@@ -18,7 +19,10 @@ export class User {
   privateKeyCipher: string;
 
   @Prop({ required: true, default: false })
-  isVerified: boolean;
+  isVerified?: boolean;
+
+  @Prop({ required: true, default: UserRole.USER })
+  role?: UserRole;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -72,19 +72,6 @@
         "type": "string"
       }
     ],
-    "name": "AuctionStarted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "proofURI",
-        "type": "string"
-      }
-    ],
     "name": "Awarded",
     "type": "event"
   },
@@ -589,29 +576,6 @@
       }
     ],
     "name": "setStarterPackFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "proofURI",
-        "type": "string"
-      }
-    ],
-    "name": "startAuction",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

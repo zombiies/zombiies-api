@@ -35,6 +35,10 @@ export class CardCommand {
     private readonly ethClient: EtherClientService,
   ) {}
 
+  get contract() {
+    return this.ethClient.contract;
+  }
+
   @Command({
     command: 'card:seed',
     describe: 'seed cards',
@@ -68,7 +72,7 @@ export class CardCommand {
 
     const uri = await this.ipfsStorage.putObject(factoryData);
 
-    await (await this.ethClient.getContract().setFactoryURI(uri)).wait();
+    await (await this.contract.setFactoryURI(uri)).wait();
   }
 
   private seededCount: number;
@@ -132,7 +136,7 @@ export class CardCommand {
     })
     fee: string,
   ) {
-    await this.ethClient.getContract().setStarterPackFee(parseEther(fee));
+    await this.contract.setStarterPackFee(parseEther(fee));
   }
 
   @Command({
@@ -147,7 +151,7 @@ export class CardCommand {
     })
     uri: string,
   ) {
-    await this.ethClient.getContract().setFactoryURI(uri);
+    await this.contract.setFactoryURI(uri);
   }
 
   @Command({
@@ -162,6 +166,6 @@ export class CardCommand {
     })
     count: number,
   ) {
-    await this.ethClient.getContract().setCountToLevelUp(BigNumber.from(count));
+    await this.contract.setCountToLevelUp(BigNumber.from(count));
   }
 }

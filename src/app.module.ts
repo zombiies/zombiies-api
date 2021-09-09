@@ -23,6 +23,7 @@ import { IpfsConfigService } from './config/ipfs/ipfs.config.service';
 import ethersConfigOption from './config/ethers/ethers.config.option';
 import { EthersModule } from 'nestjs-ethers';
 import { EtherClientModule } from './module/ether-client/ether-client.module';
+import { AuctionModule } from './module/auction/auction.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { EtherClientModule } from './module/ether-client/ether-client.module';
     CardModule,
     CommandModule,
     EtherClientModule,
+    AuctionModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

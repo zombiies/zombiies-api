@@ -29,6 +29,14 @@ export class CardService {
     return this.cardModel.find().exec();
   }
 
+  get contract() {
+    return this.ethClient.contract;
+  }
+
+  get ownerWallet() {
+    return this.ethClient.ownerWallet;
+  }
+
   async getMaxCardSeed(): Promise<number> {
     const maxSeedCard = await this.cardModel
       .findOne()
@@ -51,10 +59,6 @@ export class CardService {
     await this.cardModel.deleteMany();
   }
 
-  getContract() {
-    return this.ethClient.getContract();
-  }
-
   async findOne(query: FilterQuery<CardDocument>) {
     return this.cardModel.findOne(query).exec();
   }
@@ -64,14 +68,12 @@ export class CardService {
   }
 
   async getStarterPackFee() {
-    return this.getContract().getStarterPackFee();
+    return this.contract.getStarterPackFee();
   }
 
   async canBuyStarterPack(user: User) {
     const buyerWallet = this.ethClient.getWalletOfUser(user);
-    const buyerBalance = await this.getContract().balanceOf(
-      buyerWallet.address,
-    );
+    const buyerBalance = await this.contract.balanceOf(buyerWallet.address);
 
     return buyerBalance.eq(0);
   }
@@ -85,7 +87,7 @@ export class CardService {
 
     const fee = await this.getStarterPackFee();
     const buyTx = await buyerWallet.sendTransaction({
-      to: this.ethClient.ownerWallet.address,
+      to: this.ownerWallet.address,
       value: fee,
     });
     const buyReceipt = await buyTx.wait();
@@ -125,16 +127,18 @@ export class CardService {
       const proofCid = await this.ipfsStorage.putObject(proof);
       const tokenCids = monsterCards.concat(equipmentCards).map((c) => c.cid);
 
-      const buyStarterPackTx = await this.ethClient
-        .getContract()
-        .buyStarterPack(buyerWallet.address, tokenCids, proofCid);
+      const buyStarterPackTx = await this.ethClient.contract.buyStarterPack(
+        buyerWallet.address,
+        tokenCids,
+        proofCid,
+      );
       const receipt = await buyStarterPackTx.wait();
 
       const createdTokenIds = getTokenIdsFromReceipt(receipt);
 
       return this.findCardTokens(createdTokenIds);
     } catch (e) {
-      await this.ethClient.ownerWallet.sendTransaction({
+      await this.ownerWallet.sendTransaction({
         to: buyerWallet.address,
         value: fee,
       });
@@ -169,14 +173,14 @@ export class CardService {
   }
 
   async findCardTokens(ids: BigNumber[]): Promise<CardTokenModel[]> {
-    const tokens = await this.getContract().tokensIn(ids);
+    const tokens = await this.contract.tokensIn(ids);
 
     return this.getCardTokensFromToken(tokens);
   }
 
   async getCardTokensOfUser(user: User) {
     const wallet = this.ethClient.getWalletOfUser(user);
-    const tokens = await this.getContract().tokensOf(wallet.address);
+    const tokens = await this.contract.tokensOf(wallet.address);
 
     return this.getCardTokensFromToken(tokens);
   }

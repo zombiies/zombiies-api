@@ -12,6 +12,7 @@ import { AES, enc } from 'crypto-js';
 import { Contract } from './typechain';
 import { getNodeEnv, NodeEnv } from '../../util/node-env';
 import { User } from '../user/schema/user.schema';
+import { BigNumber } from 'ethers';
 
 @Injectable()
 export class EtherClientService {
@@ -23,8 +24,20 @@ export class EtherClientService {
   ) {}
 
   private _ownerWallet: WalletSigner;
-  private contract: Contract;
+  private _contract: Contract;
   private _faucetWallet: WalletSigner;
+
+  get contract(): Contract {
+    if (typeof this._contract === 'undefined') {
+      this._contract = this.ethersContract.create(
+        this.config.contractAddress,
+        ABI,
+        this.ownerWallet,
+      ) as Contract;
+    }
+
+    return this._contract;
+  }
 
   get faucetWallet(): WalletSigner {
     if (typeof this._faucetWallet === 'undefined') {
@@ -81,15 +94,7 @@ export class EtherClientService {
     ).toString();
   }
 
-  getContract(): Contract {
-    if (typeof this.contract === 'undefined') {
-      this.contract = this.ethersContract.create(
-        this.config.contractAddress,
-        ABI,
-        this.ownerWallet,
-      ) as Contract;
-    }
-
-    return this.contract;
+  async isOwnerOf(address: string, tokenId: BigNumber) {
+    return (await this.contract.ownerOf(tokenId)) === address;
   }
 }
