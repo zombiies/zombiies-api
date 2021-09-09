@@ -62,9 +62,7 @@ export class SeedCommand {
     } else {
       const randoms = await this.cardService.getRandomCardsWithRandomValue(
         Date().toString(),
-        Math.floor(Math.random() * 2) > 1
-          ? CardType.MONSTER
-          : CardType.EQUIPMENT,
+        Math.random() * 2 > 1 ? CardType.MONSTER : CardType.EQUIPMENT,
         1,
         8,
       );
