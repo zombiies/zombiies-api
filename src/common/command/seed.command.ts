@@ -5,7 +5,6 @@ import { CardService } from '../../module/card/card.service';
 import { EtherClientService } from '../../module/ether-client/ether-client.service';
 import { getTokenIdsFromReceipt } from '../../util/contract';
 import { CardType } from '../../module/card/enum/card-type.enum';
-import { CardTokenModel } from '../../module/card/model/card-token.model';
 import { CardDocument } from '../../module/card/schema/card.schema';
 
 @Injectable()
