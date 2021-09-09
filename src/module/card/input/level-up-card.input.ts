@@ -1,8 +1,9 @@
 import { InputType } from '@nestjs/graphql';
-import { Length } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize } from 'class-validator';
 
 @InputType()
 export class LevelUpCardInput {
-  @Length(2, 2)
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
   sacrificeTokenIds: string[];
 }

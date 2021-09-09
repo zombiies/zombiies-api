@@ -24,6 +24,7 @@ import ethersConfigOption from './config/ethers/ethers.config.option';
 import { EthersModule } from 'nestjs-ethers';
 import { EtherClientModule } from './module/ether-client/ether-client.module';
 import { AuctionModule } from './module/auction/auction.module';
+import { SeedCommand } from './common/command/seed.command';
 
 @Module({
   imports: [
@@ -69,6 +70,6 @@ import { AuctionModule } from './module/auction/auction.module';
     AuctionModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppResolver],
+  providers: [AppService, AppResolver, SeedCommand],
 })
 export class AppModule {}

@@ -53,11 +53,7 @@ export class AuctionService {
   async bid(bidder: UserDocument, auctionId: string, currentBid: BigNumber) {
     const currentBidAt = new Date();
 
-    const auction = await this.auctionModel
-      .findOne({
-        _id: auctionId,
-      })
-      .exec();
+    const auction = await this.auctionModel.findById(auctionId).exec();
 
     if (!auction) {
       throw new NotFoundException('Auction not found');
@@ -156,21 +152,13 @@ export class AuctionService {
       throw e;
     }
 
-    return this.auctionModel
-      .findOne({
-        _id: auction._id,
-      })
-      .exec();
+    return this.auctionModel.findById(auction._id).exec();
   }
 
   async endAuction(user: UserDocument, auctionId: string) {
     const current = new Date();
 
-    const auction = await this.auctionModel
-      .findOne({
-        _id: auctionId,
-      })
-      .exec();
+    const auction = await this.auctionModel.findById(auctionId).exec();
 
     if (!auction) {
       throw new NotFoundException('Auction not found');
@@ -239,7 +227,7 @@ export class AuctionService {
       )
       .exec();
 
-    return this.auctionModel.findOne({ _id: auctionId }).exec();
+    return this.auctionModel.findById(auctionId).exec();
   }
 
   async startAuction(

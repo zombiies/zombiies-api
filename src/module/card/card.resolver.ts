@@ -25,7 +25,7 @@ export class CardResolver {
     return this.service.buyStarterPack(currentUser);
   }
 
-  @Mutation((returns) => [CardTokenModel])
+  @Mutation((returns) => CardTokenModel)
   @UseGuards(JwtAuthGuard)
   async levelUpCard(
     @CurrentUser() currentUser: User,

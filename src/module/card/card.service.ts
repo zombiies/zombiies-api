@@ -97,7 +97,9 @@ export class CardService {
     }
 
     if (!allStringsEqual(...sacrificeCards.map((c) => c.cid))) {
-      throw new BadRequestException('All sacrifice cards must be same');
+      throw new BadRequestException(
+        'All sacrifice cards must be same type and level',
+      );
     }
 
     const nextLevelCard = await this.getNextLevelCard(sacrificeCards[0]);
@@ -263,11 +265,17 @@ export class CardService {
     count = 1,
     maxLevel = 8,
     maxRareLevel = RareLevel.ELITE,
-  ) {
+  ): Promise<{
+    randoms: Array<{
+      value: number;
+      take: boolean;
+    }>;
+    cards: CardDocument[];
+  }> {
     const rng = createRng(seed);
     const maxInt = await this.getMaxCardSeed();
     const randoms = [];
-    const cards: Card[] = [];
+    const cards: CardDocument[] = [];
     const acceptRareLevels = RareLevels.slice(
       0,
       RareLevels.indexOf(maxRareLevel) + 1,
