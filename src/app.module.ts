@@ -25,6 +25,7 @@ import { EthersModule } from 'nestjs-ethers';
 import { EtherClientModule } from './module/ether-client/ether-client.module';
 import { AuctionModule } from './module/auction/auction.module';
 import { SeedCommand } from './common/command/seed.command';
+import { DeckModule } from './module/deck/deck.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { SeedCommand } from './common/command/seed.command';
     CommandModule,
     EtherClientModule,
     AuctionModule,
+    DeckModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver, SeedCommand],

@@ -8,7 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Card, CardDocument } from './schema/card.schema';
 import { FilterQuery, Model, Promise } from 'mongoose';
-import { User } from '../user/schema/user.schema';
+import { User, UserDocument } from '../user/schema/user.schema';
 import { CardType } from './enum/card-type.enum';
 import { RareLevel, RareLevels } from './enum/rare-level.enum';
 import { InjectIpfsStorage, IpfsStorage } from '../../lib/ipfs-storage';
@@ -313,5 +313,18 @@ export class CardService {
       randoms,
       cards,
     };
+  }
+
+  async findAndCheckTokenByUser(user: UserDocument, tokenId: BigNumber) {
+    const token = await this.findOneCardToken(tokenId);
+    const wallet = this.ethClient.getWalletOfUser(user);
+
+    if (!(await this.ethClient.isOwnerOf(wallet.address, tokenId))) {
+      throw new ForbiddenException(
+        'You do not have permission to do this action',
+      );
+    }
+
+    return token;
   }
 }
