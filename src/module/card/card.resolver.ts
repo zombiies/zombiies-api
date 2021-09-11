@@ -9,6 +9,7 @@ import { User } from '../user/schema/user.schema';
 import { CardTokenModel } from './model/card-token.model';
 import { LevelUpCardInput } from './input/level-up-card.input';
 import { BigNumber } from 'ethers';
+import { CardType } from './enum/card-type.enum';
 
 @Resolver((of) => CardModel)
 export class CardResolver {
@@ -19,10 +20,13 @@ export class CardResolver {
     return this.service.getAllCard();
   }
 
-  @Mutation((returns) => [CardTokenModel])
+  @Mutation((returns) => CardTokenModel)
   @UseGuards(JwtAuthGuard)
-  async buyStarterPack(@CurrentUser() currentUser: User) {
-    return this.service.buyStarterPack(currentUser);
+  async buyToken(
+    @CurrentUser() currentUser: User,
+    @Args({ name: 'type', type: () => CardType }) type: CardType,
+  ) {
+    return this.service.mint(currentUser, type);
   }
 
   @Mutation((returns) => CardTokenModel)
@@ -47,7 +51,10 @@ export class CardResolver {
 
   @Query((returns) => Boolean)
   @UseGuards(JwtAuthGuard)
-  async canBuyStarterPack(@CurrentUser() currentUser: User) {
-    return this.service.canBuyStarterPack(currentUser);
+  async canBuyToken(
+    @CurrentUser() user: User,
+    @Args({ name: 'type', type: () => CardType }) type: CardType,
+  ) {
+    return this.service.canMint(user, type);
   }
 }

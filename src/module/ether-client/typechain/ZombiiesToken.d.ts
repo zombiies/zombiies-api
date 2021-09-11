@@ -22,13 +22,11 @@ import { TypedEventFilter, TypedEvent, TypedListener } from './commons';
 interface ZombiiesTokenInterface extends ethers.utils.Interface {
   functions: {
     'approve(address,uint256)': FunctionFragment;
-    'award(address,string,string)': FunctionFragment;
     'balanceOf(address)': FunctionFragment;
     'burn(uint256)': FunctionFragment;
-    'buyStarterPack(address,string[],string)': FunctionFragment;
     'getApproved(uint256)': FunctionFragment;
     'getFactoryURI()': FunctionFragment;
-    'getStarterPackFee()': FunctionFragment;
+    'getMintFee()': FunctionFragment;
     'initialize()': FunctionFragment;
     'isApprovedForAll(address,address)': FunctionFragment;
     'levelUp(address,uint256[],string,string)': FunctionFragment;
@@ -36,10 +34,11 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     'owner()': FunctionFragment;
     'ownerOf(uint256)': FunctionFragment;
     'renounceOwnership()': FunctionFragment;
+    'safeMint(address,string,string)': FunctionFragment;
     'safeTransferFrom(address,address,uint256)': FunctionFragment;
     'setApprovalForAll(address,bool)': FunctionFragment;
     'setFactoryURI(string)': FunctionFragment;
-    'setStarterPackFee(uint256)': FunctionFragment;
+    'setMintFee(uint256)': FunctionFragment;
     'supportsInterface(bytes4)': FunctionFragment;
     'symbol()': FunctionFragment;
     'tokenByIndex(uint256)': FunctionFragment;
@@ -56,16 +55,8 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     functionFragment: 'approve',
     values: [string, BigNumberish],
   ): string;
-  encodeFunctionData(
-    functionFragment: 'award',
-    values: [string, string, string],
-  ): string;
   encodeFunctionData(functionFragment: 'balanceOf', values: [string]): string;
   encodeFunctionData(functionFragment: 'burn', values: [BigNumberish]): string;
-  encodeFunctionData(
-    functionFragment: 'buyStarterPack',
-    values: [string, string[], string],
-  ): string;
   encodeFunctionData(
     functionFragment: 'getApproved',
     values: [BigNumberish],
@@ -75,7 +66,7 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
-    functionFragment: 'getStarterPackFee',
+    functionFragment: 'getMintFee',
     values?: undefined,
   ): string;
   encodeFunctionData(
@@ -101,6 +92,10 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     values?: undefined,
   ): string;
   encodeFunctionData(
+    functionFragment: 'safeMint',
+    values: [string, string, string],
+  ): string;
+  encodeFunctionData(
     functionFragment: 'safeTransferFrom',
     values: [string, string, BigNumberish],
   ): string;
@@ -113,7 +108,7 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     values: [string],
   ): string;
   encodeFunctionData(
-    functionFragment: 'setStarterPackFee',
+    functionFragment: 'setMintFee',
     values: [BigNumberish],
   ): string;
   encodeFunctionData(
@@ -152,13 +147,8 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: 'approve', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'award', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'balanceOf', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'burn', data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: 'buyStarterPack',
-    data: BytesLike,
-  ): Result;
   decodeFunctionResult(
     functionFragment: 'getApproved',
     data: BytesLike,
@@ -167,10 +157,7 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     functionFragment: 'getFactoryURI',
     data: BytesLike,
   ): Result;
-  decodeFunctionResult(
-    functionFragment: 'getStarterPackFee',
-    data: BytesLike,
-  ): Result;
+  decodeFunctionResult(functionFragment: 'getMintFee', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'initialize', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'isApprovedForAll',
@@ -184,6 +171,7 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     functionFragment: 'renounceOwnership',
     data: BytesLike,
   ): Result;
+  decodeFunctionResult(functionFragment: 'safeMint', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'safeTransferFrom',
     data: BytesLike,
@@ -196,10 +184,7 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
     functionFragment: 'setFactoryURI',
     data: BytesLike,
   ): Result;
-  decodeFunctionResult(
-    functionFragment: 'setStarterPackFee',
-    data: BytesLike,
-  ): Result;
+  decodeFunctionResult(functionFragment: 'setMintFee', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'supportsInterface',
     data: BytesLike,
@@ -232,23 +217,21 @@ interface ZombiiesTokenInterface extends ethers.utils.Interface {
   events: {
     'Approval(address,address,uint256)': EventFragment;
     'ApprovalForAll(address,address,bool)': EventFragment;
-    'Awarded(string)': EventFragment;
     'FactoryURIChanged(string)': EventFragment;
     'LevelUp(string)': EventFragment;
+    'MintFeeChanged(uint256)': EventFragment;
     'OwnershipTransferred(address,address)': EventFragment;
-    'StarterPackBought(string)': EventFragment;
-    'StarterPackFeeChanged(uint256)': EventFragment;
+    'SafeMint(string)': EventFragment;
     'Transfer(address,address,uint256)': EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: 'Approval'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'ApprovalForAll'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'Awarded'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'FactoryURIChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'LevelUp'): EventFragment;
+  getEvent(nameOrSignatureOrTopic: 'MintFeeChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'OwnershipTransferred'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'StarterPackBought'): EventFragment;
-  getEvent(nameOrSignatureOrTopic: 'StarterPackFeeChanged'): EventFragment;
+  getEvent(nameOrSignatureOrTopic: 'SafeMint'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'Transfer'): EventFragment;
 }
 
@@ -302,24 +285,10 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<ContractTransaction>;
 
-    award(
-      to: string,
-      tokenURI: string,
-      proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<ContractTransaction>;
-
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     burn(
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<ContractTransaction>;
-
-    buyStarterPack(
-      to: string,
-      tokenURIs: string[],
-      proofURI: string,
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<ContractTransaction>;
 
@@ -330,7 +299,7 @@ export class ZombiiesToken extends BaseContract {
 
     getFactoryURI(overrides?: CallOverrides): Promise<[string]>;
 
-    getStarterPackFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getMintFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     initialize(
       overrides?: Overrides & { from?: string | Promise<string> },
@@ -363,6 +332,13 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<ContractTransaction>;
 
+    safeMint(
+      to: string,
+      tokenURI: string,
+      proofURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> },
+    ): Promise<ContractTransaction>;
+
     'safeTransferFrom(address,address,uint256)'(
       from: string,
       to: string,
@@ -389,7 +365,7 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<ContractTransaction>;
 
-    setStarterPackFee(
+    setMintFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<ContractTransaction>;
@@ -448,24 +424,10 @@ export class ZombiiesToken extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> },
   ): Promise<ContractTransaction>;
 
-  award(
-    to: string,
-    tokenURI: string,
-    proofURI: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
-  ): Promise<ContractTransaction>;
-
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   burn(
     tokenId: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
-  ): Promise<ContractTransaction>;
-
-  buyStarterPack(
-    to: string,
-    tokenURIs: string[],
-    proofURI: string,
     overrides?: Overrides & { from?: string | Promise<string> },
   ): Promise<ContractTransaction>;
 
@@ -476,7 +438,7 @@ export class ZombiiesToken extends BaseContract {
 
   getFactoryURI(overrides?: CallOverrides): Promise<string>;
 
-  getStarterPackFee(overrides?: CallOverrides): Promise<BigNumber>;
+  getMintFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   initialize(
     overrides?: Overrides & { from?: string | Promise<string> },
@@ -506,6 +468,13 @@ export class ZombiiesToken extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> },
   ): Promise<ContractTransaction>;
 
+  safeMint(
+    to: string,
+    tokenURI: string,
+    proofURI: string,
+    overrides?: Overrides & { from?: string | Promise<string> },
+  ): Promise<ContractTransaction>;
+
   'safeTransferFrom(address,address,uint256)'(
     from: string,
     to: string,
@@ -532,7 +501,7 @@ export class ZombiiesToken extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> },
   ): Promise<ContractTransaction>;
 
-  setStarterPackFee(
+  setMintFee(
     newFee: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> },
   ): Promise<ContractTransaction>;
@@ -588,23 +557,9 @@ export class ZombiiesToken extends BaseContract {
       overrides?: CallOverrides,
     ): Promise<void>;
 
-    award(
-      to: string,
-      tokenURI: string,
-      proofURI: string,
-      overrides?: CallOverrides,
-    ): Promise<void>;
-
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     burn(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-    buyStarterPack(
-      to: string,
-      tokenURIs: string[],
-      proofURI: string,
-      overrides?: CallOverrides,
-    ): Promise<void>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -613,7 +568,7 @@ export class ZombiiesToken extends BaseContract {
 
     getFactoryURI(overrides?: CallOverrides): Promise<string>;
 
-    getStarterPackFee(overrides?: CallOverrides): Promise<BigNumber>;
+    getMintFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(overrides?: CallOverrides): Promise<void>;
 
@@ -639,6 +594,13 @@ export class ZombiiesToken extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
+    safeMint(
+      to: string,
+      tokenURI: string,
+      proofURI: string,
+      overrides?: CallOverrides,
+    ): Promise<void>;
+
     'safeTransferFrom(address,address,uint256)'(
       from: string,
       to: string,
@@ -662,10 +624,7 @@ export class ZombiiesToken extends BaseContract {
 
     setFactoryURI(newURI: string, overrides?: CallOverrides): Promise<void>;
 
-    setStarterPackFee(
-      newFee: BigNumberish,
-      overrides?: CallOverrides,
-    ): Promise<void>;
+    setMintFee(newFee: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -731,13 +690,15 @@ export class ZombiiesToken extends BaseContract {
       { owner: string; operator: string; approved: boolean }
     >;
 
-    Awarded(proofURI?: null): TypedEventFilter<[string], { proofURI: string }>;
-
     FactoryURIChanged(
       newURI?: null,
     ): TypedEventFilter<[string], { newURI: string }>;
 
     LevelUp(proofURI?: null): TypedEventFilter<[string], { proofURI: string }>;
+
+    MintFeeChanged(
+      newFee?: null,
+    ): TypedEventFilter<[BigNumber], { newFee: BigNumber }>;
 
     OwnershipTransferred(
       previousOwner?: string | null,
@@ -747,13 +708,7 @@ export class ZombiiesToken extends BaseContract {
       { previousOwner: string; newOwner: string }
     >;
 
-    StarterPackBought(
-      proofURI?: null,
-    ): TypedEventFilter<[string], { proofURI: string }>;
-
-    StarterPackFeeChanged(
-      newFee?: null,
-    ): TypedEventFilter<[BigNumber], { newFee: BigNumber }>;
+    SafeMint(proofURI?: null): TypedEventFilter<[string], { proofURI: string }>;
 
     Transfer(
       from?: string | null,
@@ -772,24 +727,10 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<BigNumber>;
 
-    award(
-      to: string,
-      tokenURI: string,
-      proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<BigNumber>;
-
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     burn(
       tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<BigNumber>;
-
-    buyStarterPack(
-      to: string,
-      tokenURIs: string[],
-      proofURI: string,
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<BigNumber>;
 
@@ -800,7 +741,7 @@ export class ZombiiesToken extends BaseContract {
 
     getFactoryURI(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getStarterPackFee(overrides?: CallOverrides): Promise<BigNumber>;
+    getMintFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
       overrides?: Overrides & { from?: string | Promise<string> },
@@ -833,6 +774,13 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<BigNumber>;
 
+    safeMint(
+      to: string,
+      tokenURI: string,
+      proofURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> },
+    ): Promise<BigNumber>;
+
     'safeTransferFrom(address,address,uint256)'(
       from: string,
       to: string,
@@ -859,7 +807,7 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<BigNumber>;
 
-    setStarterPackFee(
+    setMintFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<BigNumber>;
@@ -916,13 +864,6 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<PopulatedTransaction>;
 
-    award(
-      to: string,
-      tokenURI: string,
-      proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<PopulatedTransaction>;
-
     balanceOf(
       owner: string,
       overrides?: CallOverrides,
@@ -933,13 +874,6 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<PopulatedTransaction>;
 
-    buyStarterPack(
-      to: string,
-      tokenURIs: string[],
-      proofURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
-    ): Promise<PopulatedTransaction>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides,
@@ -947,7 +881,7 @@ export class ZombiiesToken extends BaseContract {
 
     getFactoryURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getStarterPackFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getMintFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initialize(
       overrides?: Overrides & { from?: string | Promise<string> },
@@ -980,6 +914,13 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<PopulatedTransaction>;
 
+    safeMint(
+      to: string,
+      tokenURI: string,
+      proofURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> },
+    ): Promise<PopulatedTransaction>;
+
     'safeTransferFrom(address,address,uint256)'(
       from: string,
       to: string,
@@ -1006,7 +947,7 @@ export class ZombiiesToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<PopulatedTransaction>;
 
-    setStarterPackFee(
+    setMintFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> },
     ): Promise<PopulatedTransaction>;

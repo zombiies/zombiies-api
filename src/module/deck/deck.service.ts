@@ -35,7 +35,8 @@ export class DeckService {
         {
           $set: {
             deckCards: deckCards.filter(
-              ({ tokenId: cid }) => cid !== tokenId.toHexString(),
+              ({ tokenId: deckTokenId }) =>
+                deckTokenId !== tokenId.toHexString(),
             ),
           },
         },
@@ -168,7 +169,7 @@ export class DeckService {
 
   async ownedDecksCount(user: UserDocument) {
     return this.model
-      .count({
+      .countDocuments({
         owner: user._id,
       })
       .exec();

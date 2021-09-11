@@ -16,7 +16,7 @@ export class CardModel {
   rareLevel: RareLevel;
   faction: Faction;
   type: CardType;
-  cid: string;
+  tokenUri: string;
 
   @Field((type) => Int)
   level: number;

@@ -59,7 +59,7 @@ import { DeckModule } from './module/deck/deck.module';
         const { network } = ethersConfig;
 
         return {
-          network: network,
+          network,
         };
       },
     }),

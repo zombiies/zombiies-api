@@ -35,7 +35,7 @@ export class Card {
   type: CardType;
 
   @Prop({ required: true, unique: true })
-  cid: string;
+  tokenUri: string;
 
   @Prop({ required: true })
   level: number;

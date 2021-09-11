@@ -10,9 +10,9 @@ import { ConfigType } from '@nestjs/config';
 import * as ABI from './abi/ZombiiesToken.json';
 import { AES, enc } from 'crypto-js';
 import { Contract } from './typechain';
-import { getNodeEnv, NodeEnv } from '../../util/node-env';
 import { User } from '../user/schema/user.schema';
 import { BigNumber } from 'ethers';
+import { isDev } from '../../util/node-env';
 
 @Injectable()
 export class EtherClientService {
@@ -25,7 +25,6 @@ export class EtherClientService {
 
   private _ownerWallet: WalletSigner;
   private _contract: Contract;
-  private _faucetWallet: WalletSigner;
 
   get contract(): Contract {
     if (typeof this._contract === 'undefined') {
@@ -39,16 +38,6 @@ export class EtherClientService {
     return this._contract;
   }
 
-  get faucetWallet(): WalletSigner {
-    if (typeof this._faucetWallet === 'undefined') {
-      this._faucetWallet = this.signer.createWallet(
-        this.config.faucetPrivateKey,
-      );
-    }
-
-    return this._faucetWallet;
-  }
-
   get ownerWallet(): WalletSigner {
     if (typeof this._ownerWallet === 'undefined') {
       this._ownerWallet = this.signer.createWallet(this.config.ownerPrivateKey);
@@ -58,17 +47,18 @@ export class EtherClientService {
   }
 
   async createNewWallet(): Promise<WalletSigner> {
-    const wallet = this.signer.createRandomWallet();
+    const newWallet = this.signer.createRandomWallet();
 
-    if (getNodeEnv() === NodeEnv.DEVELOPMENT) {
-      const tx = await this.faucetWallet.sendTransaction({
-        to: wallet.address,
-        value: parseEther('0.1'),
-      });
-      await tx.wait();
+    if (isDev()) {
+      await (
+        await this.ownerWallet.sendTransaction({
+          to: newWallet.address,
+          value: parseEther('0.1'),
+        })
+      ).wait();
     }
 
-    return wallet;
+    return newWallet;
   }
 
   createWalletFromPrivateKey(privateKey: string): WalletSigner {

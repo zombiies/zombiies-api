@@ -55,19 +55,6 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "proofURI",
-        "type": "string"
-      }
-    ],
-    "name": "Awarded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "string",
         "name": "newURI",
         "type": "string"
       }
@@ -86,6 +73,19 @@
       }
     ],
     "name": "LevelUp",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "MintFeeChanged",
     "type": "event"
   },
   {
@@ -117,20 +117,7 @@
         "type": "string"
       }
     ],
-    "name": "StarterPackBought",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newFee",
-        "type": "uint256"
-      }
-    ],
-    "name": "StarterPackFeeChanged",
+    "name": "SafeMint",
     "type": "event"
   },
   {
@@ -180,29 +167,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "tokenURI",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "proofURI",
-        "type": "string"
-      }
-    ],
-    "name": "award",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "owner",
         "type": "address"
       }
@@ -227,29 +191,6 @@
       }
     ],
     "name": "burn",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "string[]",
-        "name": "tokenURIs",
-        "type": "string[]"
-      },
-      {
-        "internalType": "string",
-        "name": "proofURI",
-        "type": "string"
-      }
-    ],
-    "name": "buyStarterPack",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -288,7 +229,7 @@
   },
   {
     "inputs": [],
-    "name": "getStarterPackFee",
+    "name": "getMintFee",
     "outputs": [
       {
         "internalType": "uint256",
@@ -414,6 +355,29 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenURI",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "proofURI",
+        "type": "string"
+      }
+    ],
+    "name": "safeMint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "from",
         "type": "address"
       },
@@ -500,7 +464,7 @@
         "type": "uint256"
       }
     ],
-    "name": "setStarterPackFee",
+    "name": "setMintFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

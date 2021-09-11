@@ -6,6 +6,11 @@ import { EtherClientService } from '../../module/ether-client/ether-client.servi
 import { getTokenIdsFromReceipt } from '../../util/contract';
 import { CardType } from '../../module/card/enum/card-type.enum';
 import { CardDocument } from '../../module/card/schema/card.schema';
+import {
+  cidToUri,
+  InjectIpfsStorage,
+  IpfsStorage,
+} from '../../lib/ipfs-storage';
 
 @Injectable()
 export class SeedCommand {
@@ -13,25 +18,26 @@ export class SeedCommand {
     private readonly userService: UserService,
     private readonly cardService: CardService,
     private readonly ethClient: EtherClientService,
+    @InjectIpfsStorage() private readonly ipfsStorage: IpfsStorage,
   ) {}
 
   @Command({
-    command: 'seed:award <user_id>',
+    command: 'seed:mint <user-id>',
     describe: 'seed',
   })
   async seedToken(
     @Positional({
-      name: 'user_id',
+      name: 'user-id',
       describe: 'user id to award',
       type: 'string',
     })
     userId: string,
     @Option({
-      name: 'cid',
-      describe: 'Token Cid',
+      name: 'token-uri',
+      describe: 'Token Uri',
       type: 'string',
     })
-    cid: string,
+    tokenUri: string,
     @Option({
       name: 'count',
       describe: 'count of tokens to award',
@@ -49,9 +55,9 @@ export class SeedCommand {
 
     let card: CardDocument;
 
-    if (cid) {
+    if (tokenUri) {
       card = await this.cardService.findOne({
-        cid: cid,
+        tokenUri: tokenUri,
       });
 
       if (!card) {
@@ -69,12 +75,16 @@ export class SeedCommand {
     }
 
     const userWallet = this.ethClient.getWalletOfUser(user);
+    const proofCid = await this.ipfsStorage.putObject({
+      type: 'SEED',
+    });
+    const proofUri = cidToUri(proofCid);
 
     for (let i = 0; i < count; i++) {
-      const tx = await this.cardService.contract.award(
+      const tx = await this.cardService.contract.safeMint(
         userWallet.address,
-        card.cid,
-        'SEED',
+        card.tokenUri,
+        proofUri,
       );
       const receipt = await tx.wait();
       const tokenIds = getTokenIdsFromReceipt(receipt);

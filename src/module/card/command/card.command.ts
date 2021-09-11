@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Command, Positional } from 'nestjs-command';
-import { InjectIpfsStorage, IpfsStorage } from '../../../lib/ipfs-storage';
+import {
+  cidToUri,
+  InjectIpfsStorage,
+  IpfsStorage,
+} from '../../../lib/ipfs-storage';
 import { Card, CardSkill } from '../schema/card.schema';
 import { CardService } from '../card.service';
 import { Promise } from 'mongoose';
@@ -10,7 +14,6 @@ import { Faction } from '../enum/faction.enum';
 import { CardType } from '../enum/card-type.enum';
 import { EtherClientService } from '../../ether-client/ether-client.service';
 import { parseEther } from 'nestjs-ethers';
-import { BigNumber } from 'ethers';
 
 interface CardSeed {
   name: string;
@@ -57,7 +60,7 @@ export class CardCommand {
     );
 
     await this.cardService.deleteAll();
-    await this.doParallelJob<Omit<Card, 'cid'>>(
+    await this.doParallelJob<Omit<Card, 'tokenUri'>>(
       cards,
       100,
       this.doSeed.bind(this),
@@ -67,12 +70,13 @@ export class CardCommand {
 
   async pinFactory() {
     const factoryData = (await this.cardService.getAllCard()).map(
-      ({ cid }) => cid,
+      ({ tokenUri }) => tokenUri,
     );
 
-    const uri = await this.ipfsStorage.putObject(factoryData);
+    const cid = await this.ipfsStorage.putObject(factoryData);
+    const ipfsUri = cidToUri(cid);
 
-    await (await this.contract.setFactoryURI(uri)).wait();
+    await (await this.contract.setFactoryURI(ipfsUri)).wait();
   }
 
   private seededCount: number;
@@ -104,11 +108,11 @@ export class CardCommand {
   async doSeed(cardsData: Card[]) {
     for (const cardData of cardsData) {
       try {
-        const hash = await this.ipfsStorage.putObject(cardData);
+        const cid = await this.ipfsStorage.putObject(cardData);
 
         await this.cardService.createCard({
           ...cardData,
-          cid: hash,
+          tokenUri: cidToUri(cid),
         });
       } catch (e) {
         console.log('======');
@@ -124,8 +128,8 @@ export class CardCommand {
   }
 
   @Command({
-    command: 'card:pack_fee:set <fee>',
-    describe: 'Set starter pack fee',
+    command: 'card:mint_fee:set <fee>',
+    describe: 'Set mint fee',
   })
   async setStarterPackFee(
     @Positional({
@@ -136,7 +140,7 @@ export class CardCommand {
     })
     fee: string,
   ) {
-    await this.contract.setStarterPackFee(parseEther(fee));
+    await this.contract.setMintFee(parseEther(fee));
   }
 
   @Command({
@@ -152,20 +156,5 @@ export class CardCommand {
     uri: string,
   ) {
     await this.contract.setFactoryURI(uri);
-  }
-
-  @Command({
-    command: 'card:level_up_count:set <count>',
-    describe: 'Set count of card to level up',
-  })
-  async setLevelUpCount(
-    @Positional({
-      name: 'count',
-      describe: 'new count',
-      type: 'number',
-    })
-    count: number,
-  ) {
-    await this.contract.setCountToLevelUp(BigNumber.from(count));
   }
 }

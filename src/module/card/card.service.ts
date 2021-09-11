@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ForbiddenException,
-  HttpException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -11,7 +10,11 @@ import { FilterQuery, Model, Promise } from 'mongoose';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { CardType } from './enum/card-type.enum';
 import { RareLevel, RareLevels } from './enum/rare-level.enum';
-import { InjectIpfsStorage, IpfsStorage } from '../../lib/ipfs-storage';
+import {
+  cidToUri,
+  InjectIpfsStorage,
+  IpfsStorage,
+} from '../../lib/ipfs-storage';
 import { getTokenIdsFromReceipt } from '../../util/contract';
 import { EtherClientService } from '../ether-client/ether-client.service';
 import { BigNumber } from 'ethers';
@@ -96,7 +99,7 @@ export class CardService {
       throw new BadRequestException('Must combine two cards to level up');
     }
 
-    if (!allStringsEqual(...sacrificeCards.map((c) => c.cid))) {
+    if (!allStringsEqual(...sacrificeCards.map((c) => c.tokenUri))) {
       throw new BadRequestException(
         'All sacrifice cards must be same type and level',
       );
@@ -110,15 +113,16 @@ export class CardService {
 
     const proof = {
       sacrificeTokenIds,
-      nextLevelCardCid: nextLevelCard.cid,
+      nextLevelTokenUri: nextLevelCard.tokenUri,
     };
     const proofCid = await this.ipfsStorage.putObject(proof);
+    const proofUri = cidToUri(proofCid);
 
     const tx = await this.contract.levelUp(
       userWallet.address,
       sacrificeTokenIds,
-      nextLevelCard.cid,
-      proofCid,
+      nextLevelCard.tokenUri,
+      proofUri,
     );
     const receipt = await tx.wait();
     const newTokenId = getTokenIdsFromReceipt(
@@ -135,26 +139,26 @@ export class CardService {
     return nextLevelCardToken;
   }
 
-  async getStarterPackFee() {
-    return this.contract.getStarterPackFee();
+  async getMintFee() {
+    return this.contract.getMintFee();
   }
 
-  async canBuyStarterPack(user: User) {
-    const buyerWallet = this.ethClient.getWalletOfUser(user);
-    const buyerBalance = await this.contract.balanceOf(buyerWallet.address);
+  async canMint(user: User, type: CardType) {
+    const ownedTokens = await this.getCardTokensOfUser(user, type);
 
-    return buyerBalance.eq(0);
+    return ownedTokens.length < 8;
   }
 
-  async buyStarterPack(user: User) {
-    if (!(await this.canBuyStarterPack(user))) {
-      throw new HttpException('Already bought starter pack', 400);
+  async mint(user: User, type: CardType) {
+    if (!(await this.canMint(user, type))) {
+      throw new BadRequestException(
+        'Can buy new card only if you have less than 8 cards',
+      );
     }
 
-    const buyerWallet = this.ethClient.getWalletOfUser(user);
-
-    const fee = await this.getStarterPackFee();
-    const buyTx = await buyerWallet.sendTransaction({
+    const wallet = this.ethClient.getWalletOfUser(user);
+    const fee = await this.getMintFee();
+    const buyTx = await wallet.sendTransaction({
       to: this.ownerWallet.address,
       value: fee,
     });
@@ -162,82 +166,73 @@ export class CardService {
     const buyTxHash = buyReceipt.transactionHash;
 
     try {
-      const { randoms: monsterRandoms, cards: monsterCards } =
-        await this.getRandomCardsWithRandomValue(
-          buyTxHash,
-          CardType.MONSTER,
-          8,
-          1,
-          RareLevel.RARE,
-        );
-
-      const { randoms: equipmentRandoms, cards: equipmentCards } =
-        await this.getRandomCardsWithRandomValue(
-          buyTxHash,
-          CardType.EQUIPMENT,
-          8,
-          1,
-          RareLevel.RARE,
-        );
+      const { randoms, cards } = await this.getRandomCardsWithRandomValue(
+        buyTxHash,
+        CardType.MONSTER,
+        1,
+        1,
+        RareLevel.COMMON,
+      );
 
       const proof = {
-        seed: buyTxHash,
-        monsters: {
-          randoms: monsterRandoms,
-          cards: monsterCards.map((c) => c.cid),
-        },
-        equipments: {
-          randoms: equipmentRandoms,
-          cards: equipmentCards.map((c) => c.cid),
-        },
+        transactionHash: buyTxHash,
+        randoms,
+        cards,
       };
-
       const proofCid = await this.ipfsStorage.putObject(proof);
-      const tokenCids = monsterCards.concat(equipmentCards).map((c) => c.cid);
+      const proofUri = cidToUri(proofCid);
 
-      const buyStarterPackTx = await this.ethClient.contract.buyStarterPack(
-        buyerWallet.address,
-        tokenCids,
-        proofCid,
+      const tokenUri = cards[0].tokenUri;
+      const mintTx = await this.contract.safeMint(
+        wallet.address,
+        tokenUri,
+        proofUri,
       );
-      const receipt = await buyStarterPackTx.wait();
+      const mintReceipt = await mintTx.wait();
 
-      const createdTokenIds = getTokenIdsFromReceipt(receipt);
+      const createdTokenId = getTokenIdsFromReceipt(mintReceipt)[0];
 
-      return this.findCardTokens(createdTokenIds);
+      return this.findOneCardToken(createdTokenId);
     } catch (e) {
       await this.ownerWallet.sendTransaction({
-        to: buyerWallet.address,
+        to: wallet.address,
         value: fee,
       });
 
-      throw new InternalServerErrorException();
+      throw e;
     }
   }
 
   async getCardTokensFromToken(
     tokens: ContractToken[],
+    type?: CardType,
   ): Promise<CardTokenModel[]> {
-    const tokenCids = tokens.map((token) => token.uri);
+    const tokenUris = tokens.map((token) => token.uri);
+    const types = type ? [type] : [CardType.MONSTER, CardType.EQUIPMENT];
     const cards = await this.cardModel
       .find({
-        cid: {
-          $in: tokenCids,
+        tokenUri: {
+          $in: tokenUris,
+        },
+        type: {
+          $in: types,
         },
       })
       .exec();
-    const cardsByCidMap = cards.reduce(
+    const cardsByUriMap = cards.reduce(
       (memo, current) => ({
         ...memo,
-        [current.cid]: current,
+        [current.tokenUri]: current,
       }),
       {},
     );
 
-    return tokens.map(({ id, uri }) => ({
-      tokenId: id.toHexString(),
-      ...cardsByCidMap[uri].toObject(),
-    }));
+    return tokens
+      .filter(({ uri }) => cardsByUriMap[uri])
+      .map(({ id, uri }) => ({
+        tokenId: id.toHexString(),
+        ...cardsByUriMap[uri].toObject(),
+      }));
   }
 
   async findCardTokens(ids: BigNumber[]): Promise<CardTokenModel[]> {
@@ -252,11 +247,11 @@ export class CardService {
     return tokens[0];
   }
 
-  async getCardTokensOfUser(user: User) {
+  async getCardTokensOfUser(user: User, type?: CardType) {
     const wallet = this.ethClient.getWalletOfUser(user);
     const tokens = await this.contract.tokensOf(wallet.address);
 
-    return this.getCardTokensFromToken(tokens);
+    return this.getCardTokensFromToken(tokens, type);
   }
 
   async getRandomCardsWithRandomValue(

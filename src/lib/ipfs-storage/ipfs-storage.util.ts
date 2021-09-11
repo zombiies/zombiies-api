@@ -24,3 +24,6 @@ export const createIpfsConnection = (
 ): IpfsStorage => {
   return createIpfsStorage(options);
 };
+
+export const cidToUri = (cid: string) => `ipfs://${cid}`;
+export const uriToCid = (uri: string) => uri.replace(/^ipfs:\/\//, '');

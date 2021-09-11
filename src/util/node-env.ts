@@ -21,3 +21,5 @@ export const getNodeEnv = (): NodeEnv => {
       return NodeEnv.DEVELOPMENT;
   }
 };
+
+export const isDev = (): boolean => getNodeEnv() === NodeEnv.DEVELOPMENT;
