@@ -3,19 +3,24 @@ import {
   PubSubModuleOptions,
   PubSubModuleOptionsFactory,
 } from '../../lib/pub-sub';
-import pubSubConfigOption from './pub-sub.config.option';
 import { ConfigType } from '@nestjs/config';
+import redisConfigOption from '../redis/redis.config.option';
 
 @Injectable()
 export class PubSubConfigService implements PubSubModuleOptionsFactory {
   constructor(
-    @Inject(pubSubConfigOption.KEY)
-    private readonly pubSubConfig: ConfigType<typeof pubSubConfigOption>,
+    @Inject(redisConfigOption.KEY)
+    private readonly redisConfig: ConfigType<typeof redisConfigOption>,
   ) {}
 
   createPubSubModuleOptions():
     | Promise<PubSubModuleOptions>
     | PubSubModuleOptions {
-    return this.pubSubConfig;
+    return {
+      clientOptions: {
+        pubClientOptions: this.redisConfig,
+        subClientOptions: this.redisConfig,
+      },
+    };
   }
 }

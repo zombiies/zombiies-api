@@ -1,16 +1,14 @@
 import { MongooseModuleOptions } from '@nestjs/mongoose';
-import { cleanEnv, str } from 'envalid';
 import { registerAs } from '@nestjs/config';
+import { getEnvConfig } from '../env.config';
 
 type MongoConfigOption = MongooseModuleOptions;
 
 export const getMongoOption = (): MongoConfigOption => {
-  const env = cleanEnv(process.env, {
-    MONGO_URI: str(),
-  });
+  const { MONGO_URI } = getEnvConfig();
 
   return {
-    uri: env.MONGO_URI,
+    uri: MONGO_URI,
     useCreateIndex: true,
     useNewUrlParser: true,
   };

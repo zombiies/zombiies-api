@@ -9,7 +9,6 @@ import { StartAuctionInput } from './input/start-auction.input';
 import { BigNumber } from 'ethers';
 import { parseEther } from 'nestjs-ethers';
 import { BidInput } from './input/bid.input';
-import { EndAuctionInput } from './input/end-auction.input';
 
 @Resolver((of) => AuctionModel)
 export class AuctionResolver {
@@ -28,17 +27,6 @@ export class AuctionResolver {
       BigNumber.from(tokenId),
       parseEther(startBid),
     );
-  }
-
-  @Mutation((returns) => AuctionModel)
-  @UseGuards(JwtAuthGuard)
-  async endAuction(
-    @CurrentUser() currentUser: UserDocument,
-    @Args('input') input: EndAuctionInput,
-  ) {
-    const { auctionId } = input;
-
-    return this.service.endAuction(currentUser, auctionId);
   }
 
   @Mutation((returns) => AuctionModel)

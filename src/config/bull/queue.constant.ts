@@ -1,0 +1,1 @@
+export const AUCTION_QUEUE = 'AUCTION_QUEUE';

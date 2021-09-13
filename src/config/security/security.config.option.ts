@@ -1,6 +1,6 @@
-import { cleanEnv, num, str } from 'envalid';
 import { registerAs } from '@nestjs/config';
 import { JwtModuleOptions } from '@nestjs/jwt';
+import { getEnvConfig } from '../env.config';
 
 type SecurityConfigOption = {
   bcryptRound: number;
@@ -8,18 +8,14 @@ type SecurityConfigOption = {
 };
 
 export const getSecurityConfig = (): SecurityConfigOption => {
-  const env = cleanEnv(process.env, {
-    BCRYPT_ROUND: num(),
-    JWT_SECRET: str(),
-    JWT_EXPIRE_IN: str(),
-  });
+  const { BCRYPT_ROUND, JWT_SECRET, JWT_EXPIRE_IN } = getEnvConfig();
 
   return {
-    bcryptRound: env.BCRYPT_ROUND,
+    bcryptRound: BCRYPT_ROUND,
     jwt: {
-      secret: env.JWT_SECRET,
+      secret: JWT_SECRET,
       signOptions: {
-        expiresIn: env.JWT_EXPIRE_IN,
+        expiresIn: JWT_EXPIRE_IN,
       },
     },
   };

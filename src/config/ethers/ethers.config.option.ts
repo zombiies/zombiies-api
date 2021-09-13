@@ -1,5 +1,5 @@
-import { cleanEnv, str } from 'envalid';
 import { registerAs } from '@nestjs/config';
+import { getEnvConfig } from '../env.config';
 
 type EthersConfigOption = {
   ownerPrivateKey: string;
@@ -9,19 +9,12 @@ type EthersConfigOption = {
 };
 
 export const getEthersOption = (): EthersConfigOption => {
-  const env = cleanEnv(process.env, {
-    OWNER_PRIVATE_KEY: str(),
-    CONTRACT_ADDRESS: str(),
-    PRIVATE_KEY_SECRET: str(),
-    ETH_NETWORK: str(),
-  });
-
   const {
     CONTRACT_ADDRESS,
     OWNER_PRIVATE_KEY,
     PRIVATE_KEY_SECRET,
     ETH_NETWORK,
-  } = env;
+  } = getEnvConfig();
 
   return {
     contractAddress: CONTRACT_ADDRESS,
