@@ -128,7 +128,7 @@ export class CardCommand {
   }
 
   @Command({
-    command: 'card:mint_fee:set <fee>',
+    command: 'card:set-mint-fee <fee>',
     describe: 'Set mint fee',
   })
   async setStarterPackFee(
@@ -144,7 +144,7 @@ export class CardCommand {
   }
 
   @Command({
-    command: 'card:factory_uri:set <uri>',
+    command: 'card:set-factory-uri <uri>',
     describe: 'Set factory uri',
   })
   async setFactoryUri(

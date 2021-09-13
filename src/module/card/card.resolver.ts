@@ -10,6 +10,7 @@ import { CardTokenModel } from './model/card-token.model';
 import { LevelUpCardInput } from './input/level-up-card.input';
 import { BigNumber } from 'ethers';
 import { CardType } from './enum/card-type.enum';
+import { formatEther } from 'nestjs-ethers';
 
 @Resolver((of) => CardModel)
 export class CardResolver {
@@ -18,6 +19,13 @@ export class CardResolver {
   @Query((returns) => [CardModel])
   async allCards(): Promise<CardDocument[]> {
     return this.service.getAllCard();
+  }
+
+  @Query((returns) => String)
+  async getPackFee(): Promise<string> {
+    const fee = await this.service.getMintFee();
+
+    return formatEther(fee);
   }
 
   @Mutation((returns) => CardTokenModel)
