@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch } from '@nestjs/common';
 import { MongoError } from 'mongodb';
 import { GqlExceptionFilter } from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-express';
-import { parseDuplicatedField } from '../common/util/mongo-error.util';
+import { parseDuplicatedField } from '../common/util';
 
 @Catch(MongoError)
 export class MongoExceptionFilter implements GqlExceptionFilter {

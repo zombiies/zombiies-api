@@ -9,7 +9,7 @@ import { InjectPubSub } from '../../lib/pub-sub';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { NOTIFICATION_PUSHED } from './subscription/notification.trigger';
 import { NotificationDocument } from './schema/notification.schema';
-import { getUserFromContext } from '../../common/util/gql-context.util';
+import { getUserFromContext } from '../../common/util';
 
 @Resolver((of) => NotificationModel)
 export class NotificationResolver {

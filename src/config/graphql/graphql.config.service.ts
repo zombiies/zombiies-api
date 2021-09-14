@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { GqlModuleOptions, GqlOptionsFactory } from '@nestjs/graphql';
 import { ConfigType } from '@nestjs/config';
 import graphqlConfigOption from './graphql.config.option';
-import { lowerMapKey } from '../../common/util/map.util';
+import { lowerMapKey } from '../../common/util';
 
 @Injectable()
 export default class GraphqlConfigService implements GqlOptionsFactory {

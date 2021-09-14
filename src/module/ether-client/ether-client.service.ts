@@ -12,7 +12,7 @@ import { AES, enc } from 'crypto-js';
 import { Contract } from './typechain';
 import { User } from '../user/schema/user.schema';
 import { BigNumber } from 'ethers';
-import { isDev } from '../../common/util/node-env.util';
+import { isDev } from '../../common/util';
 
 @Injectable()
 export class EtherClientService {
