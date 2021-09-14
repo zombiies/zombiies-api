@@ -1,11 +1,15 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { UserModel } from '../../user/model/user.model';
 import { BidActionModel } from './bid-action.model';
+import { CardTokenModel } from '../../card/model/card-token.model';
 
 @ObjectType()
 export class AuctionModel {
   @Field((type) => ID)
   id: string;
+
+  @Field((type) => CardTokenModel)
+  token: CardTokenModel;
 
   @Field((type) => UserModel)
   seller: UserModel;

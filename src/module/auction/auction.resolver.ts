@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { AuctionModel } from './model/auction.model';
 import { AuctionService } from './auction.service';
 import { UseGuards } from '@nestjs/common';
@@ -9,10 +16,15 @@ import { StartAuctionInput } from './input/start-auction.input';
 import { BigNumber } from 'ethers';
 import { parseEther } from 'nestjs-ethers';
 import { BidInput } from './input/bid.input';
+import { CardService } from '../card/card.service';
+import { AuctionDocument } from './schema/auction.schema';
 
 @Resolver((of) => AuctionModel)
 export class AuctionResolver {
-  constructor(private readonly service: AuctionService) {}
+  constructor(
+    private readonly service: AuctionService,
+    private readonly cardService: CardService,
+  ) {}
 
   @Mutation((returns) => AuctionModel)
   @UseGuards(JwtAuthGuard)
@@ -55,5 +67,12 @@ export class AuctionResolver {
   @UseGuards(JwtAuthGuard)
   async participatedAuctions(@CurrentUser() currentUser: UserDocument) {
     return this.service.participatedAuctions(currentUser);
+  }
+
+  @ResolveField()
+  async token(@Parent() parent: AuctionDocument) {
+    const { tokenId } = parent;
+
+    return this.cardService.findOneCardToken(BigNumber.from(tokenId));
   }
 }

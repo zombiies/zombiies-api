@@ -5,6 +5,7 @@ import { Auction, AuctionSchema } from './schema/auction.schema';
 import { EtherClientModule } from '../ether-client/ether-client.module';
 import { AuctionResolver } from './auction.resolver';
 import { AuctionConsumer } from './job/auction.consumer';
+import { CardModule } from '../card/card.module';
 
 @Module({
   providers: [AuctionService, AuctionResolver, AuctionConsumer],
@@ -16,6 +17,7 @@ import { AuctionConsumer } from './job/auction.consumer';
       },
     ]),
     EtherClientModule,
+    CardModule,
   ],
 })
 export class AuctionModule {}
