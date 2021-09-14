@@ -15,13 +15,13 @@ import {
   InjectIpfsStorage,
   IpfsStorage,
 } from '../../lib/ipfs-storage';
-import { getTokenIdsFromReceipt } from '../../util/contract';
+import { getTokenIdsFromReceipt } from '../../common/util/contract.util';
 import { EtherClientService } from '../ether-client/ether-client.service';
 import { BigNumber } from 'ethers';
 import { CardTokenModel } from './model/card-token.model';
 import { ContractToken } from './interface/contract-token.interface';
-import { createRng, nextInt } from '../../util/random';
-import { allStringsEqual } from '../../util/string';
+import { createRng, nextInt } from '../../common/util/random.util';
+import { allStringsEqual } from '../../common/util/string.util';
 
 @Injectable()
 export class CardService {

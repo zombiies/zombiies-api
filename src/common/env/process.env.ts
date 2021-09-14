@@ -1,6 +1,6 @@
 import { cleanEnv, num, str } from 'envalid';
 
-export const getEnvConfig = () =>
+export const getProcessEnv = () =>
   cleanEnv(process.env, {
     OWNER_PRIVATE_KEY: str(),
     CONTRACT_ADDRESS: str(),

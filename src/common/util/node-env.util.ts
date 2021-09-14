@@ -1,11 +1,11 @@
 import { cleanEnv, str } from 'envalid';
 
-export enum NodeEnv {
+export enum NodeEnvUtil {
   DEVELOPMENT = 'development',
   PRODUCTION = 'production',
 }
 
-export const getNodeEnv = (): NodeEnv => {
+export const getNodeEnv = (): NodeEnvUtil => {
   const env = cleanEnv(process.env, {
     NODE_ENV: str({
       choices: ['development', 'production'],
@@ -16,10 +16,10 @@ export const getNodeEnv = (): NodeEnv => {
 
   switch (nodeEnv) {
     case 'production':
-      return NodeEnv.PRODUCTION;
+      return NodeEnvUtil.PRODUCTION;
     default:
-      return NodeEnv.DEVELOPMENT;
+      return NodeEnvUtil.DEVELOPMENT;
   }
 };
 
-export const isDev = (): boolean => getNodeEnv() === NodeEnv.DEVELOPMENT;
+export const isDev = (): boolean => getNodeEnv() === NodeEnvUtil.DEVELOPMENT;

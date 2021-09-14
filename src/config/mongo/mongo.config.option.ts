@@ -1,11 +1,11 @@
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { registerAs } from '@nestjs/config';
-import { getEnvConfig } from '../env.config';
+import { getProcessEnv } from '../../common/env/process.env';
 
 type MongoConfigOption = MongooseModuleOptions;
 
 export const getMongoOption = (): MongoConfigOption => {
-  const { MONGO_URI } = getEnvConfig();
+  const { MONGO_URI } = getProcessEnv();
 
   return {
     uri: MONGO_URI,

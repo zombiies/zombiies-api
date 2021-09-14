@@ -1,11 +1,11 @@
 import { IpfsStorageModuleOptions } from '../../lib/ipfs-storage';
 import { registerAs } from '@nestjs/config';
-import { getEnvConfig } from '../env.config';
+import { getProcessEnv } from '../../common/env/process.env';
 
 type IpfsConfigOption = IpfsStorageModuleOptions;
 
 export const getIpfsOption = (): IpfsConfigOption => {
-  const { WEB3_STORAGE_TOKEN } = getEnvConfig();
+  const { WEB3_STORAGE_TOKEN } = getProcessEnv();
 
   return {
     token: WEB3_STORAGE_TOKEN,

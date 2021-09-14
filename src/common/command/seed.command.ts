@@ -3,7 +3,7 @@ import { Command, Option, Positional } from 'nestjs-command';
 import { UserService } from '../../module/user/user.service';
 import { CardService } from '../../module/card/card.service';
 import { EtherClientService } from '../../module/ether-client/ether-client.service';
-import { getTokenIdsFromReceipt } from '../../util/contract';
+import { getTokenIdsFromReceipt } from '../util/contract.util';
 import { CardType } from '../../module/card/enum/card-type.enum';
 import { CardDocument } from '../../module/card/schema/card.schema';
 import {

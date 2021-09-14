@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { getEnvConfig } from '../env.config';
+import { getProcessEnv } from '../../common/env/process.env';
 
 type EthersConfigOption = {
   ownerPrivateKey: string;
@@ -14,7 +14,7 @@ export const getEthersOption = (): EthersConfigOption => {
     OWNER_PRIVATE_KEY,
     PRIVATE_KEY_SECRET,
     ETH_NETWORK,
-  } = getEnvConfig();
+  } = getProcessEnv();
 
   return {
     contractAddress: CONTRACT_ADDRESS,

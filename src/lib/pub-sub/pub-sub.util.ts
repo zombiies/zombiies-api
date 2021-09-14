@@ -30,7 +30,7 @@ export const createPubSubConnection = (
 
   if (!clientOptions) {
     throw new Error(
-      'Invalid configuration. Must provider one of clientOptions, config!',
+      'Invalid configuration. Must provider one of clientOptions, env!',
     );
   }
 

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { GqlModuleOptions, GqlOptionsFactory } from '@nestjs/graphql';
 import { ConfigType } from '@nestjs/config';
 import graphqlConfigOption from './graphql.config.option';
+import { lowerMapKey } from '../../common/util/map.util';
 
 @Injectable()
 export default class GraphqlConfigService implements GqlOptionsFactory {
@@ -11,6 +12,26 @@ export default class GraphqlConfigService implements GqlOptionsFactory {
   ) {}
 
   createGqlOptions(): Promise<GqlModuleOptions> | GqlModuleOptions {
-    return this.gqlConfig;
+    return {
+      ...this.gqlConfig,
+      subscriptions: {
+        'subscriptions-transport-ws': {
+          onConnect: async (connectionParams) => {
+            const lowerKeyParams = lowerMapKey(connectionParams);
+            const { authorization } = lowerKeyParams;
+
+            if (authorization) {
+              return {
+                req: {
+                  headers: lowerKeyParams,
+                },
+              };
+            }
+
+            return connectionParams;
+          },
+        },
+      },
+    };
   }
 }

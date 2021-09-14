@@ -33,6 +33,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import { createBullBoard } from '@bull-board/api';
 import { Queue } from 'bull';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
+import { NotificationModule } from './module/notification/notification.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { BullAdapter } from '@bull-board/api/bullAdapter';
     AuctionModule,
     DeckModule,
     BullModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver, SeedCommand],

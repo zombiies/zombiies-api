@@ -4,6 +4,7 @@ import { ApolloError } from 'apollo-server-express';
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   catch(exception: any, _host: ArgumentsHost): any {
+    console.error(exception);
     const { response, message = 'Internal server error' } = exception;
     const extractedMessage = this.extractEthRevertReason(message);
 

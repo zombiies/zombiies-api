@@ -17,5 +17,6 @@ import { AuthResolver } from './auth.resolver';
       useClass: JwtConfigService,
     }),
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}
