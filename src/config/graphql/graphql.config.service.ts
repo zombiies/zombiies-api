@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { GqlModuleOptions, GqlOptionsFactory } from '@nestjs/graphql';
 import { ConfigType } from '@nestjs/config';
 import graphqlConfigOption from './graphql.config.option';
@@ -11,6 +11,8 @@ export default class GraphqlConfigService implements GqlOptionsFactory {
     private readonly gqlConfig: ConfigType<typeof graphqlConfigOption>,
   ) {}
 
+  private readonly logger = new Logger(GraphqlConfigService.name);
+
   createGqlOptions(): Promise<GqlModuleOptions> | GqlModuleOptions {
     return {
       ...this.gqlConfig,
@@ -18,7 +20,7 @@ export default class GraphqlConfigService implements GqlOptionsFactory {
         'subscriptions-transport-ws': {
           onConnect: async (connectionParams) => {
             if (isDev()) {
-              console.log(connectionParams);
+              this.logger.debug(connectionParams);
             }
 
             const lowerKeyParams = lowerMapKey(connectionParams);
