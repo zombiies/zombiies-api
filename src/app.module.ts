@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
@@ -26,14 +26,10 @@ import { AuctionModule } from './module/auction/auction.module';
 import { SeedCommand } from './common/command/seed.command';
 import { DeckModule } from './module/deck/deck.module';
 import redisConfigOption from './config/redis/redis.config.option';
-import { BullModule, InjectQueue } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bull';
 import { BullConfigService } from './config/bull/bull.config.service';
-import { AUCTION_QUEUE } from './config/bull/queue.constant';
-import { ExpressAdapter } from '@bull-board/express';
-import { createBullBoard } from '@bull-board/api';
-import { Queue } from 'bull';
-import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { NotificationModule } from './module/notification/notification.module';
+import { BullBoardModule } from './module/bull-board/bull-board.module';
 
 @Module({
   imports: [
@@ -74,9 +70,6 @@ import { NotificationModule } from './module/notification/notification.module';
     BullModule.forRootAsync({
       useClass: BullConfigService,
     }),
-    BullModule.registerQueue({
-      name: AUCTION_QUEUE,
-    }),
     UserModule,
     AuthModule,
     CardModule,
@@ -86,25 +79,9 @@ import { NotificationModule } from './module/notification/notification.module';
     DeckModule,
     BullModule,
     NotificationModule,
+    BullBoardModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver, SeedCommand],
 })
-export class AppModule implements NestModule {
-  constructor(
-    @InjectQueue(AUCTION_QUEUE) private readonly auctionQueue: Queue,
-  ) {}
-
-  configure(consumer: MiddlewareConsumer) {
-    const serverAdapter = new ExpressAdapter();
-
-    createBullBoard({
-      queues: [new BullAdapter(this.auctionQueue)],
-      serverAdapter: serverAdapter,
-    });
-
-    const bullBoardRoute = '/admin/queues';
-    serverAdapter.setBasePath(bullBoardRoute);
-    consumer.apply(serverAdapter.getRouter()).forRoutes(bullBoardRoute);
-  }
-}
+export class AppModule {}

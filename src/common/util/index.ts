@@ -5,3 +5,4 @@ export * from './random.util';
 export * from './string.util';
 export * from './map.util';
 export * from './gql-context.util';
+export * from './human-interval';

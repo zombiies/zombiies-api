@@ -56,13 +56,4 @@ export class CardResolver {
   async ownedCardTokens(@CurrentUser() currentUser: User) {
     return this.service.getCardTokensOfUser(currentUser);
   }
-
-  @Query((returns) => Boolean)
-  @UseGuards(JwtAuthGuard)
-  async canBuyToken(
-    @CurrentUser() user: User,
-    @Args({ name: 'type', type: () => CardType }) type: CardType,
-  ) {
-    return this.service.canMint(user, type);
-  }
 }

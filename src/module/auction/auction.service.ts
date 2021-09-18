@@ -10,9 +10,15 @@ import { Model } from 'mongoose';
 import { EtherClientService } from '../ether-client/ether-client.service';
 import { UserDocument } from '../user/schema/user.schema';
 import { BigNumber } from 'ethers';
-import { addDays, isAfter, isBefore } from 'date-fns';
+import { addDays, isAfter } from 'date-fns';
 import { formatEther, parseEther } from 'nestjs-ethers';
-import { isNotAdmin } from '../user/user.util';
+import { NotificationService } from '../notification/notification.service';
+import { InjectQueue } from '@nestjs/bull';
+import { AUCTION_QUEUE } from '../../config/bull/queue.constant';
+import { Queue } from 'bull';
+import { humanInterval } from '../../common/util';
+import { AuctionProcessor } from './enum/auction-processor.enum';
+import { EndAuctionJobType } from './type/end-auction-job.type';
 
 @Injectable()
 export class AuctionService {
@@ -20,6 +26,8 @@ export class AuctionService {
     @InjectModel(Auction.name)
     private readonly auctionModel: Model<AuctionDocument>,
     private readonly ethClient: EtherClientService,
+    private readonly notificationService: NotificationService,
+    @InjectQueue(AUCTION_QUEUE) private readonly auctionQueue: Queue,
   ) {}
 
   get contract() {
@@ -99,6 +107,11 @@ export class AuctionService {
             value: parseEther(latestBid),
           })
         ).wait();
+
+        await this.notificationService.push(
+          latestBidder,
+          `Auction ${auctionId} has higher bid. You have refunded ${latestBid} ETH`,
+        );
       } catch (e) {
         await (
           await this.ownerWallet.sendTransaction({
@@ -155,9 +168,7 @@ export class AuctionService {
     return this.auctionModel.findById(auction._id).exec();
   }
 
-  async endAuction(user: UserDocument, auctionId: string) {
-    const current = new Date();
-
+  async endAuction(auctionId: string) {
     const auction = await this.auctionModel.findById(auctionId).exec();
 
     if (!auction) {
@@ -171,35 +182,16 @@ export class AuctionService {
       latestBidder,
       tokenId,
       latestBidderAddress,
-      isEnded,
-      endAt,
     } = auction;
-
-    if (
-      seller._id !== user._id &&
-      latestBidder._id !== user._id &&
-      isNotAdmin(user)
-    ) {
-      throw new ForbiddenException(
-        'You do not have permission to end this auction',
-      );
-    }
-
-    if (isEnded) {
-      throw new BadRequestException('Auction is ended');
-    }
-
-    if (isBefore(current, endAt) && isNotAdmin(user)) {
-      throw new BadRequestException('Can not end auction at this time');
-    }
 
     if (latestBid) {
       const bid = parseEther(latestBid);
       const tax = bid.div(5);
+      const received = bid.sub(tax);
 
       const tx = await this.ownerWallet.sendTransaction({
         to: sellerAddress,
-        value: bid.sub(tax),
+        value: received,
       });
       await tx.wait();
 
@@ -207,13 +199,27 @@ export class AuctionService {
         'safeTransferFrom(address,address,uint256)'
       ](this.ownerWallet.address, latestBidderAddress, BigNumber.from(tokenId));
       await sendTokenTx.wait();
+
+      await this.notificationService.push(
+        latestBidder,
+        `Auction ${auctionId} ended. You received token ${tokenId}`,
+      );
+
+      await this.notificationService.push(
+        seller,
+        `Auction ${auctionId} ended. You received ${received.toString()} ETH`,
+      );
     } else {
       const tx = await this.contract[
         'safeTransferFrom(address,address,uint256)'
       ](this.ownerWallet.address, sellerAddress, BigNumber.from(tokenId));
       await tx.wait();
-    }
 
+      await this.notificationService.push(
+        seller,
+        `Auction ${auctionId} ended with no bid.`,
+      );
+    }
     await this.auctionModel
       .updateOne(
         {
@@ -263,7 +269,18 @@ export class AuctionService {
         startTransactionHash: dealHash,
       });
 
-      return auction.save();
+      await auction.save();
+      await this.auctionQueue.add(
+        AuctionProcessor.END_AUCTION,
+        {
+          auctionId: auction._id,
+        } as EndAuctionJobType,
+        {
+          delay: humanInterval('1 days'),
+        },
+      );
+
+      return auction;
     } catch (e) {
       await (
         await this.contract['safeTransferFrom(address,address,uint256)'](

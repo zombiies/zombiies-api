@@ -143,19 +143,7 @@ export class CardService {
     return this.contract.getMintFee();
   }
 
-  async canMint(user: User, type: CardType) {
-    const ownedTokens = await this.getCardTokensOfUser(user, type);
-
-    return ownedTokens.length < 8;
-  }
-
   async mint(user: User, type: CardType) {
-    if (!(await this.canMint(user, type))) {
-      throw new BadRequestException(
-        'Can buy new card only if you have less than 8 cards',
-      );
-    }
-
     const wallet = this.ethClient.getWalletOfUser(user);
     const fee = await this.getMintFee();
     const buyTx = await wallet.sendTransaction({
@@ -168,7 +156,7 @@ export class CardService {
     try {
       const { randoms, cards } = await this.getRandomCardsWithRandomValue(
         buyTxHash,
-        CardType.MONSTER,
+        type,
         1,
         1,
         RareLevel.COMMON,

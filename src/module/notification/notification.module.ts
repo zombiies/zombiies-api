@@ -14,5 +14,6 @@ import { NotificationResolver } from './notification.resolver';
       },
     ]),
   ],
+  exports: [NotificationService],
 })
 export class NotificationModule {}
