@@ -6,12 +6,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { EtherClientService } from '../ether-client/ether-client.service';
 import { UserWalletModel } from './model/user-wallet.model';
 import { formatEther } from 'nestjs-ethers';
+import { RoomService } from '../room/room.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly ethClient: EtherClientService,
+    private readonly roomService: RoomService,
   ) {}
 
   async findOneByEmail(email: string): Promise<UserDocument> {

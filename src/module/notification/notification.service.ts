@@ -26,7 +26,7 @@ export class NotificationService {
     await notification.save();
 
     await this.pubSub.publish(NOTIFICATION_PUSHED, {
-      [NOTIFICATION_PUSHED]: notification,
+      [NOTIFICATION_PUSHED]: notification.toObject(),
     });
   }
 

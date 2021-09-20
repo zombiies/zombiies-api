@@ -2,12 +2,16 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { UserDocument } from '../../user/schema/user.schema';
 import * as mongoose from 'mongoose';
+import { MongoTimestamp } from '../../../common/type/mongo-timestamp.type';
 
-export type NotificationDocument = Notification & Document;
+export type NotificationDocument = Notification & Document & MongoTimestamp;
 
 @Schema({
   timestamps: true,
   toJSON: {
+    virtuals: true,
+  },
+  toObject: {
     virtuals: true,
   },
 })

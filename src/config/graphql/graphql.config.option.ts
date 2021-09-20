@@ -11,7 +11,10 @@ export const getGraphqlConfig = (): GraphqlConfigOption => {
     debug: nodeEnv === NodeEnvUtil.DEVELOPMENT,
     playground: nodeEnv === NodeEnvUtil.DEVELOPMENT,
     autoSchemaFile: true,
-    installSubscriptionHandlers: true,
+    subscriptions: {
+      'graphql-ws': true,
+      'subscriptions-transport-ws': true,
+    },
     cors: true,
     introspection: nodeEnv === NodeEnvUtil.DEVELOPMENT,
   };

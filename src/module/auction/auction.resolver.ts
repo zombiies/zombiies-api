@@ -18,16 +18,12 @@ import { parseEther } from 'nestjs-ethers';
 import { BidInput } from './input/bid.input';
 import { CardService } from '../card/card.service';
 import { AuctionDocument } from './schema/auction.schema';
-import { InjectQueue } from '@nestjs/bull';
-import { AUCTION_QUEUE } from '../../config/bull/queue.constant';
-import { Queue } from 'bull';
 
 @Resolver((of) => AuctionModel)
 export class AuctionResolver {
   constructor(
     private readonly service: AuctionService,
     private readonly cardService: CardService,
-    @InjectQueue(AUCTION_QUEUE) private readonly auctionQueue: Queue,
   ) {}
 
   @Mutation((returns) => AuctionModel)

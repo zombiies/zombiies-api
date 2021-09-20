@@ -1,4 +1,11 @@
-import { Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
+import {
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+  Subscription,
+} from '@nestjs/graphql';
 import { NotificationModel } from './model/notification.model';
 import { ForbiddenException, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
@@ -50,5 +57,12 @@ export class NotificationResolver {
   @UseGuards(JwtAuthGuard)
   async markAllNotificationsAsRead(@CurrentUser() user: UserDocument) {
     return this.service.markAllAsRead(user);
+  }
+
+  @ResolveField()
+  createdAt(@Parent() parent: NotificationDocument) {
+    const { createdAt } = parent;
+
+    return typeof createdAt === 'string' ? createdAt : createdAt.toISOString();
   }
 }

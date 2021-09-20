@@ -30,6 +30,8 @@ import { BullModule } from '@nestjs/bull';
 import { BullConfigService } from './config/bull/bull.config.service';
 import { NotificationModule } from './module/notification/notification.module';
 import { BullBoardModule } from './module/bull-board/bull-board.module';
+import { MatchModule } from './module/match/match.module';
+import { RoomModule } from './module/room/room.module';
 
 @Module({
   imports: [
@@ -80,6 +82,8 @@ import { BullBoardModule } from './module/bull-board/bull-board.module';
     BullModule,
     NotificationModule,
     BullBoardModule,
+    MatchModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver, SeedCommand],

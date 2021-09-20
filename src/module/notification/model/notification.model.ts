@@ -7,4 +7,7 @@ export class NotificationModel {
 
   content: string;
   isRead: boolean;
+
+  @Field((type) => String)
+  createdAt?: string | Date;
 }

@@ -5,6 +5,7 @@ import { User, UserSchema } from './schema/user.schema';
 import { UserResolver } from './user.resolver';
 import { EtherClientModule } from '../ether-client/ether-client.module';
 import { UserWalletResolver } from './user-wallet.resolver';
+import { RoomModule } from '../room/room.module';
 
 @Module({
   providers: [UserService, UserResolver, UserWalletResolver],
@@ -16,6 +17,7 @@ import { UserWalletResolver } from './user-wallet.resolver';
       },
     ]),
     EtherClientModule,
+    RoomModule,
   ],
   exports: [UserService],
 })
