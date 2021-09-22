@@ -6,6 +6,7 @@ import { BullModule } from '@nestjs/bull';
 import { ROOM_QUEUE } from '../../config/bull/queue.constant';
 import { RoomConsumer } from './consumer/room.consumer';
 import { RoomResolver } from './room.resolver';
+import { MatchModule } from '../match/match.module';
 
 @Module({
   providers: [RoomService, RoomConsumer, RoomResolver],
@@ -19,6 +20,7 @@ import { RoomResolver } from './room.resolver';
     BullModule.registerQueue({
       name: ROOM_QUEUE,
     }),
+    MatchModule,
   ],
   exports: [RoomService],
 })

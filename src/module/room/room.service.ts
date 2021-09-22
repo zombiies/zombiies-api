@@ -19,6 +19,7 @@ import {
   ALL_READY,
   WAIT_READY,
 } from './subscription/room-subscription.trigger';
+import { MatchService } from '../match/match.service';
 
 @Injectable()
 export class RoomService {
@@ -26,6 +27,7 @@ export class RoomService {
     @InjectModel(Room.name) private readonly model: Model<RoomDocument>,
     @InjectQueue(ROOM_QUEUE) private readonly queue: Queue,
     @InjectPubSub() private readonly pubSub: RedisPubSub,
+    private readonly matchService: MatchService,
   ) {}
 
   async stopFindMatch(user: UserDocument) {
@@ -95,7 +97,7 @@ export class RoomService {
       });
 
       await this.removeRoom(room._id);
-      // TODO: start a match
+      await this.matchService.createMatch(player1, player2);
     }
 
     return true;

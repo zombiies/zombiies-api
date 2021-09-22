@@ -45,6 +45,13 @@ export class SeedCommand {
       default: 1,
     })
     count: number,
+    @Option({
+      name: 'unique-count',
+      describe: 'count of unique tokens to award',
+      type: 'number',
+      default: 1,
+    })
+    uniqueCount: number,
   ) {
     const user = await this.userService.findById(userId);
 
@@ -53,42 +60,44 @@ export class SeedCommand {
       return;
     }
 
-    let card: CardDocument;
+    for (let c = 0; c < uniqueCount; c++) {
+      let card: CardDocument;
 
-    if (tokenUri) {
-      card = await this.cardService.findOne({
-        tokenUri: tokenUri,
-      });
+      if (tokenUri) {
+        card = await this.cardService.findOne({
+          tokenUri: tokenUri,
+        });
 
-      if (!card) {
-        console.error('Token not found');
-        return;
+        if (!card) {
+          console.error('Token not found');
+          return;
+        }
+      } else {
+        const randoms = await this.cardService.getRandomCardsWithRandomValue(
+          Date().toString(),
+          Math.random() * 2 > 1 ? CardType.MONSTER : CardType.EQUIPMENT,
+          1,
+          8,
+        );
+        card = randoms.cards[0];
       }
-    } else {
-      const randoms = await this.cardService.getRandomCardsWithRandomValue(
-        Date().toString(),
-        Math.random() * 2 > 1 ? CardType.MONSTER : CardType.EQUIPMENT,
-        1,
-        8,
-      );
-      card = randoms.cards[0];
-    }
 
-    const userWallet = this.ethClient.getWalletOfUser(user);
-    const proofCid = await this.ipfsStorage.putObject({
-      type: 'SEED',
-    });
-    const proofUri = cidToUri(proofCid);
+      const userWallet = this.ethClient.getWalletOfUser(user);
+      const proofCid = await this.ipfsStorage.putObject({
+        type: 'SEED',
+      });
+      const proofUri = cidToUri(proofCid);
 
-    for (let i = 0; i < count; i++) {
-      const tx = await this.cardService.contract.safeMint(
-        userWallet.address,
-        card.tokenUri,
-        proofUri,
-      );
-      const receipt = await tx.wait();
-      const tokenIds = getTokenIdsFromReceipt(receipt);
-      console.log(await this.cardService.findOneCardToken(tokenIds[0]));
+      for (let i = 0; i < count; i++) {
+        const tx = await this.cardService.contract.safeMint(
+          userWallet.address,
+          card.tokenUri,
+          proofUri,
+        );
+        const receipt = await tx.wait();
+        const tokenIds = getTokenIdsFromReceipt(receipt);
+        console.log(await this.cardService.findOneCardToken(tokenIds[0]));
+      }
     }
   }
 }

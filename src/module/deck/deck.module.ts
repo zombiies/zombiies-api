@@ -16,5 +16,6 @@ import { DeckResolver } from './deck.resolver';
     ]),
     CardModule,
   ],
+  exports: [DeckService],
 })
 export class DeckModule {}
