@@ -6,6 +6,7 @@ import { InjectPubSub } from '../../lib/pub-sub';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import {
   CONFIRM_TURN_EVENT,
+  END_TURN_EVENT,
   MATCH_ENDED,
   MATCH_STARTED,
   PREPARE_TURN_EVENT,
@@ -19,6 +20,7 @@ import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import { MatchService } from './match.service';
 import { RewardModel } from './model/reward.model';
+import { EndTurnEventModel } from './model/end-turn-event.model';
 
 const matchFilter = (trigger: string) => (payload, variables, context) =>
   (payload[trigger] as MatchModel).playerStatuses.some(
@@ -53,6 +55,20 @@ export class MatchResolver {
   @UseGuards(JwtAuthGuard)
   async prepareTurnEvent() {
     return this.pubSub.asyncIterator(PREPARE_TURN_EVENT);
+  }
+
+  @Subscription((returns) => EndTurnEventModel, {
+    filter: (payload, variables, context) =>
+      (
+        payload[END_TURN_EVENT] as EndTurnEventModel
+      ).currentMatchStatus.playerStatuses.some(
+        (s: PlayerStatusModel) =>
+          s.playerId === getUserFromContext(context)?._id?.toString(),
+      ),
+  })
+  @UseGuards(JwtAuthGuard)
+  async endTurnEvent() {
+    return this.pubSub.asyncIterator(END_TURN_EVENT);
   }
 
   @Subscription((returns) => MatchModel, {

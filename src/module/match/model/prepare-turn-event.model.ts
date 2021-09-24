@@ -8,7 +8,7 @@ export class PrepareTurnEventModel {
   type: PrepareTurnEventType;
 
   playerId: string;
-  tokenId?: string;
+  tokenId: string;
   toPosition?: number;
 
   @Field((type) => MatchModel)

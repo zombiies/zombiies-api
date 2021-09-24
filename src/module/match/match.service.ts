@@ -12,6 +12,7 @@ import { InjectPubSub } from '../../lib/pub-sub';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import {
   CONFIRM_TURN_EVENT,
+  END_TURN_EVENT,
   MATCH_ENDED,
   MATCH_STARTED,
   PREPARE_TURN_EVENT,
@@ -39,6 +40,7 @@ import { ConfirmTurnEventModel } from './model/confirm-turn-event.model';
 import { randomInt } from 'crypto';
 import { CardService } from '../card/card.service';
 import { RewardModel } from './model/reward.model';
+import { EndTurnEventModel } from './model/end-turn-event.model';
 
 @Injectable()
 export class MatchService {
@@ -265,14 +267,13 @@ export class MatchService {
       )
       .exec();
 
-    const event: PrepareTurnEventModel = {
-      type: PrepareTurnEventType.END_TURN,
+    const event: EndTurnEventModel = {
       playerId: userId,
       currentMatchStatus: await this.findByIdOrFail(match._id),
     };
 
-    await this.pubSub.publish(PREPARE_TURN_EVENT, {
-      [PREPARE_TURN_EVENT]: event,
+    await this.pubSub.publish(END_TURN_EVENT, {
+      [END_TURN_EVENT]: event,
     });
   }
 
