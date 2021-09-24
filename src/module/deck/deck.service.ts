@@ -159,6 +159,22 @@ export class DeckService {
     return deck;
   }
 
+  async ownedDeckByUserId(userId: string) {
+    return this.model
+      .findOne({
+        owner: userId,
+      })
+      .exec();
+  }
+
+  async ownedDecksByUserId(userId: string) {
+    return this.model
+      .find({
+        owner: userId,
+      })
+      .exec();
+  }
+
   async ownedDecks(user: UserDocument) {
     return this.model
       .find({

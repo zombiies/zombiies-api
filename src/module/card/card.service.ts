@@ -15,13 +15,17 @@ import {
   InjectIpfsStorage,
   IpfsStorage,
 } from '../../lib/ipfs-storage';
-import { getTokenIdsFromReceipt } from '../../common/util';
+import {
+  allStringsEqual,
+  createRng,
+  getTokenIdsFromReceipt,
+  nextInt,
+} from '../../common/util';
 import { EtherClientService } from '../ether-client/ether-client.service';
 import { BigNumber } from 'ethers';
 import { CardTokenModel } from './model/card-token.model';
 import { ContractToken } from './interface/contract-token.interface';
-import { createRng, nextInt } from '../../common/util';
-import { allStringsEqual } from '../../common/util';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class CardService {
@@ -141,6 +145,13 @@ export class CardService {
 
   async getMintFee() {
     return this.contract.getMintFee();
+  }
+
+  async mintRandom(user: UserDocument) {
+    return this.mint(
+      user,
+      randomInt(0, 2) === 1 ? CardType.MONSTER : CardType.EQUIPMENT,
+    );
   }
 
   async mint(user: User, type: CardType) {

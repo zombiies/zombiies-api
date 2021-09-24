@@ -97,7 +97,10 @@ export class RoomService {
       });
 
       await this.removeRoom(room._id);
-      await this.matchService.createMatch(player1, player2);
+      await this.matchService.createMatch(
+        player1.toString(),
+        player2.toString(),
+      );
     }
 
     return true;
