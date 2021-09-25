@@ -8,7 +8,6 @@ export class MatchModel {
   @Field((type) => ID)
   id?: string;
 
-  @Field((type) => [PlayerStatusModel])
   playerStatuses: PlayerStatusModel[];
 
   @Field((type) => UserModel)

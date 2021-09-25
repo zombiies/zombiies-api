@@ -8,6 +8,5 @@ export class DeckModel {
 
   name: string;
 
-  @Field((type) => [DeckCardModel])
   cards: DeckCardModel[];
 }

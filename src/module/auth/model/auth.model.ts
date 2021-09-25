@@ -8,6 +8,5 @@ export class AuthModel {
   @Field((type) => UserModel)
   user: UserDocument;
 
-  @Field((type) => TokenModel)
   token: TokenModel;
 }

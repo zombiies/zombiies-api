@@ -5,7 +5,7 @@ import {
   InjectIpfsStorage,
   IpfsStorage,
 } from '../../../lib/ipfs-storage';
-import { Card, CardSkill } from '../schema/card.schema';
+import { Card } from '../schema/card.schema';
 import { CardService } from '../card.service';
 import { Promise } from 'mongoose';
 import * as cardsSeed from './cards-seed.json';
@@ -14,6 +14,7 @@ import { Faction } from '../enum/faction.enum';
 import { CardType } from '../enum/card-type.enum';
 import { EtherClientService } from '../../ether-client/ether-client.service';
 import { parseEther } from 'nestjs-ethers';
+import { CardSkillModel } from '../model/card-skill.model';
 
 interface CardSeed {
   name: string;
@@ -23,7 +24,7 @@ interface CardSeed {
   type: CardType;
   levels: Array<{
     level: number;
-    skills: CardSkill[];
+    skills: CardSkillModel[];
   }>;
   startSeed: number;
   endSeed: number;

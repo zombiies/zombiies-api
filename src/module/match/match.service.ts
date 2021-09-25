@@ -24,7 +24,6 @@ import { User, UserDocument } from '../user/schema/user.schema';
 import { CardTokenModel } from '../card/model/card-token.model';
 import { BoardCardModel } from './model/board-card.model';
 import { CardType } from '../card/enum/card-type.enum';
-import { CardSkill } from '../card/schema/card.schema';
 import { unionBy } from 'lodash';
 import { PrepareTurnEventModel } from './model/prepare-turn-event.model';
 import { PrepareTurnEventType } from './enum/prepare-turn-event-type.enum';
@@ -41,6 +40,7 @@ import { randomInt } from 'crypto';
 import { CardService } from '../card/card.service';
 import { RewardModel } from './model/reward.model';
 import { EndTurnEventModel } from './model/end-turn-event.model';
+import { CardSkillModel } from '../card/model/card-skill.model';
 
 @Injectable()
 export class MatchService {
@@ -350,7 +350,7 @@ export class MatchService {
 
   private castSkill(
     card: BoardCardModel,
-    skill: CardSkill,
+    skill: CardSkillModel,
     targetBoard: BoardCardModel[],
   ): AttackEventModel | undefined {
     const { type } = skill;
@@ -380,7 +380,7 @@ export class MatchService {
     };
   }
 
-  private getDame(skill: CardSkill) {
+  private getDame(skill: CardSkillModel) {
     const { type, value } = skill;
 
     if (type === CardSkillType.RANDOM) {
@@ -510,9 +510,9 @@ export class MatchService {
   }
 
   private combineCollectionSkills(
-    collection1: CardSkill[],
-    collection2: CardSkill[],
-  ): CardSkill[] {
+    collection1: CardSkillModel[],
+    collection2: CardSkillModel[],
+  ): CardSkillModel[] {
     const upCol = collection1.map((s1) => {
       const found = collection2.find((s2) => s2.type === s1.type);
 
@@ -524,7 +524,7 @@ export class MatchService {
         : s1;
     });
 
-    return unionBy<CardSkill>(upCol.concat(collection2), (s) => s.type);
+    return unionBy<CardSkillModel>(upCol.concat(collection2), (s) => s.type);
   }
 
   private validateCanPutCard(

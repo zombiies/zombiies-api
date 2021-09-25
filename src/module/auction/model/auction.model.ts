@@ -8,10 +8,8 @@ export class AuctionModel {
   @Field((type) => ID)
   id: string;
 
-  @Field((type) => CardTokenModel)
   token: CardTokenModel;
 
-  @Field((type) => UserModel)
   seller: UserModel;
 
   sellerAddress: string;
@@ -21,13 +19,11 @@ export class AuctionModel {
   startTransactionHash: string;
   latestBid?: string;
 
-  @Field((type) => UserModel)
   latestBidder?: UserModel;
   latestBidderAddress?: string;
   latestBidAt?: Date;
   latestTransactionHash: string;
 
-  @Field((type) => [BidActionModel])
   bidHistory: BidActionModel[];
 
   isEnded?: boolean;

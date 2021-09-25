@@ -4,7 +4,6 @@ import { MatchModel } from './match.model';
 
 @ObjectType()
 export class PrepareTurnEventModel {
-  @Field((type) => PrepareTurnEventType)
   type: PrepareTurnEventType;
 
   playerId: string;
@@ -13,6 +12,5 @@ export class PrepareTurnEventModel {
   @Field((type) => Int)
   toPosition?: number;
 
-  @Field((type) => MatchModel)
   currentMatchStatus: MatchModel;
 }

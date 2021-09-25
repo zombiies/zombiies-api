@@ -8,7 +8,6 @@ export class AttackEventModel {
   @Field((type) => Int)
   toPosition: number;
 
-  @Field((type) => CardSkillModel)
   skill: CardSkillModel;
 
   @Field((type) => Int)

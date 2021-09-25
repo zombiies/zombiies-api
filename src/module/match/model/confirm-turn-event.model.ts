@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
 import { MatchModel } from './match.model';
 import { AttackEventModel } from './attack-event.model';
 
@@ -6,9 +6,7 @@ import { AttackEventModel } from './attack-event.model';
 export class ConfirmTurnEventModel {
   playerId: string;
 
-  @Field((type) => [AttackEventModel])
   attacks: AttackEventModel[];
 
-  @Field((type) => MatchModel)
   currentMatchStatus: MatchModel;
 }

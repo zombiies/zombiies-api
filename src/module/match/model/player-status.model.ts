@@ -6,10 +6,8 @@ import { DeckCardModel } from '../../deck/model/deck-card.model';
 export class PlayerStatusModel {
   playerId: string;
 
-  @Field((type) => [BoardCardModel])
   onBoard: BoardCardModel[];
 
-  @Field((type) => [DeckCardModel])
   onHand: DeckCardModel[];
 
   @Field((type) => Int)

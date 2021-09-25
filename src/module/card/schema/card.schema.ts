@@ -3,17 +3,7 @@ import { Document } from 'mongoose';
 import { RareLevel } from '../enum/rare-level.enum';
 import { Faction } from '../enum/faction.enum';
 import { CardType } from '../enum/card-type.enum';
-import { CardSkillType } from '../enum/card-skill-type.enum';
-
-export type CardSkill = {
-  type: CardSkillType;
-  value: number;
-};
-
-export type CardLevel = {
-  level: number;
-  skills: CardSkill[];
-};
+import { CardSkillModel } from '../model/card-skill.model';
 
 export type CardDocument = Card & Document;
 
@@ -41,7 +31,7 @@ export class Card {
   level: number;
 
   @Prop({ required: true })
-  skills: CardSkill[];
+  skills: CardSkillModel[];
 
   @Prop({ required: true })
   startSeed: number;

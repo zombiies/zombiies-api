@@ -10,6 +10,5 @@ export class UserModel {
   email: string;
   isVerified: boolean;
 
-  @Field((type) => UserWalletModel)
   wallet: UserWalletModel;
 }
