@@ -688,13 +688,19 @@ export class MatchService {
       .exec();
   }
 
-  private async getPlayingMatchOrFail(user: UserDocument) {
+  async getPlayingMatch(user: UserDocument) {
     const match = await this.matchModel
       .findOne({
         'playerStatuses.playerId': user._id.toString(),
         winner: null,
       })
       .exec();
+
+    return match;
+  }
+
+  private async getPlayingMatchOrFail(user: UserDocument) {
+    const match = await this.getPlayingMatch(user);
 
     if (!match) {
       throw new BadRequestException('You are not in a match');

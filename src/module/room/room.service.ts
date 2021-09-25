@@ -43,6 +43,12 @@ export class RoomService {
   }
 
   async joinOrCreateRoom(user: UserDocument) {
+    const playingMatch = await this.matchService.getPlayingMatch(user);
+
+    if (playingMatch) {
+      throw new BadRequestException('You are in a match');
+    }
+
     if (await this.getJoinedRoom(user)) {
       throw new BadRequestException('You have joined a room');
     }
