@@ -12,7 +12,6 @@ export const getGraphqlConfig = (): GraphqlConfigOption => {
     playground: nodeEnv === NodeEnvUtil.DEVELOPMENT,
     autoSchemaFile: true,
     subscriptions: {
-      'graphql-ws': true,
       'subscriptions-transport-ws': true,
     },
     cors: true,
