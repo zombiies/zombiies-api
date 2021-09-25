@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Match, MatchDocument } from './schema/match.schema';
-import { Model, ObjectId, Promise } from 'mongoose';
+import { Model, ObjectId, Promise, UpdateQuery } from 'mongoose';
 import { DeckService } from '../deck/deck.service';
 import { InjectPubSub } from '../../lib/pub-sub';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
@@ -103,28 +103,23 @@ export class MatchService {
       }
     }
 
-    await this.model.updateOne(
-      {
-        _id: match._id,
+    const newMatch = await this.findByIdAndUpdate(match._id, {
+      $set: {
+        playerStatuses: playerStatuses.map((s) =>
+          s.playerId === targetStatus.playerId
+            ? {
+                ...targetStatus,
+                onBoard: targetOnBoard,
+              }
+            : s,
+        ),
       },
-      {
-        $set: {
-          playerStatuses: playerStatuses.map((s) =>
-            s.playerId === targetStatus.playerId
-              ? {
-                  ...targetStatus,
-                  onBoard: targetOnBoard,
-                }
-              : s,
-          ),
-        },
-      },
-    );
+    });
 
     const confirmTurnEvent: ConfirmTurnEventModel = {
       playerId: userId,
       attacks: attackEvents,
-      currentMatchStatus: await this.findByIdOrFail(match.id),
+      currentMatchStatus: newMatch,
     };
 
     await this.pubSub.publish(CONFIRM_TURN_EVENT, {
@@ -133,21 +128,14 @@ export class MatchService {
   }
 
   async endMatch(match: MatchDocument, winnerId: string) {
-    await this.model
-      .updateOne(
-        {
-          _id: match._id,
-        },
-        {
-          $set: {
-            winner: winnerId,
-          },
-        },
-      )
-      .exec();
+    const newMatch = await this.findByIdAndUpdate(match._id, {
+      $set: {
+        winner: winnerId,
+      },
+    });
 
     await this.pubSub.publish(MATCH_ENDED, {
-      [MATCH_ENDED]: (await this.findByIdOrFail(match._id)).toObject(),
+      [MATCH_ENDED]: newMatch,
     });
 
     const winner = await this.userModel.findById(winnerId).exec();
@@ -178,32 +166,25 @@ export class MatchService {
     const newCrystal = crystal + (card.type === CardType.MONSTER ? 2 : 1);
     const newOnHand = onHand.filter((c) => c.tokenId === tokenId);
 
-    await this.model
-      .updateOne(
-        {
-          _id: match._id,
-        },
-        {
-          $set: {
-            playerStatuses: playerStatuses.map((s) =>
-              s.playerId === userId
-                ? {
-                    ...s,
-                    onHand: newOnHand,
-                    crystal: newCrystal,
-                  }
-                : s,
-            ),
-          },
-        },
-      )
-      .exec();
+    const newMatch = await this.findByIdAndUpdate(match._id, {
+      $set: {
+        playerStatuses: playerStatuses.map((s) =>
+          s.playerId === userId
+            ? {
+                ...s,
+                onHand: newOnHand,
+                crystal: newCrystal,
+              }
+            : s,
+        ),
+      },
+    });
 
     const event: PrepareTurnEventModel = {
       type: PrepareTurnEventType.DENY_CARD,
       playerId: userId,
       tokenId,
-      currentMatchStatus: await this.findByIdOrFail(match._id),
+      currentMatchStatus: newMatch,
     };
 
     await this.pubSub.publish(PREPARE_TURN_EVENT, {
@@ -240,36 +221,29 @@ export class MatchService {
 
     const timeoutJob = await this.createMatchTimoutJob(match);
 
-    await this.matchModel
-      .updateOne(
-        {
-          _id: match._id,
-        },
-        {
-          $set: {
-            playerStatuses: playerStatuses.map((s) =>
-              s.playerId === userId
-                ? {
-                    ...s,
-                    inTurn: false,
-                    confirmTurn: false,
-                  }
-                : {
-                    ...s,
-                    inTurn: true,
-                    confirmTurn: false,
-                    crystal: s.crystal + 3,
-                  },
-            ),
-            timeoutJobId: timeoutJob.id.toString(),
-          },
-        },
-      )
-      .exec();
+    const newMatch = await this.findByIdAndUpdate(match._id, {
+      $set: {
+        playerStatuses: playerStatuses.map((s) =>
+          s.playerId === userId
+            ? {
+                ...s,
+                inTurn: false,
+                confirmTurn: false,
+              }
+            : {
+                ...s,
+                inTurn: true,
+                confirmTurn: false,
+                crystal: s.crystal + 3,
+              },
+        ),
+        timeoutJobId: timeoutJob.id.toString(),
+      },
+    });
 
     const event: EndTurnEventModel = {
       playerId: userId,
-      currentMatchStatus: await this.findByIdOrFail(match._id),
+      currentMatchStatus: newMatch,
     };
 
     await this.pubSub.publish(END_TURN_EVENT, {
@@ -280,7 +254,6 @@ export class MatchService {
   async putToBoard(user: UserDocument, tokenId: string, position: number) {
     const userId = user._id.toString();
     const { playerStatuses, _id } = await this.getPlayingMatchOrFail(user);
-    const matchId = _id.toString();
     const { onBoard, inTurn, confirmTurn, crystal, onHand } =
       this.findPlayerStatusOrFail(userId, playerStatuses);
 
@@ -296,32 +269,27 @@ export class MatchService {
     );
     const newCrystal = crystal - cardToPut.cost;
 
-    await this.model.updateOne(
-      {
-        id: _id,
+    const newMatch = await this.findByIdAndUpdate(_id, {
+      $set: {
+        playerStatuses: playerStatuses.map((s) =>
+          s.playerId === userId
+            ? {
+                ...s,
+                onHand: newOnHand,
+                onBoard: newOnBoard,
+                crystal: newCrystal,
+              }
+            : s,
+        ),
       },
-      {
-        $set: {
-          playerStatuses: playerStatuses.map((s) =>
-            s.playerId === userId
-              ? {
-                  ...s,
-                  onHand: newOnHand,
-                  onBoard: newOnBoard,
-                  crystal: newCrystal,
-                }
-              : s,
-          ),
-        },
-      },
-    );
+    });
 
     const event: PrepareTurnEventModel = {
       type: PrepareTurnEventType.PUT_CARD,
       playerId: userId,
       tokenId,
       toPosition: position,
-      currentMatchStatus: await this.findByIdOrFail(matchId),
+      currentMatchStatus: newMatch,
     };
 
     await this.pubSub.publish(PREPARE_TURN_EVENT, {
@@ -647,45 +615,12 @@ export class MatchService {
 
   private async addTimoutJobToMatch(match: MatchDocument) {
     const timeoutJob = await this.createMatchTimoutJob(match);
-    await this.model
-      .updateOne(
-        {
-          _id: match._id,
-        },
-        {
-          $set: {
-            timeoutJobId: timeoutJob.id.toString(),
-          },
-        },
-      )
-      .exec();
 
-    return await this.findByIdOrFail(match._id);
-  }
-
-  private async insertMatchTimoutJob(match: MatchDocument) {
-    const timeoutJob = await this.matchQueue.add(
-      MatchProcess.MATCH_TIMEOUT,
-      {
-        matchId: match._id.toString(),
-      } as MatchTimeoutJobType,
-      {
-        delay: humanInterval('70 seconds'),
+    return this.findByIdAndUpdate(match._id, {
+      $set: {
+        timeoutJobId: timeoutJob.id.toString(),
       },
-    );
-
-    await this.model
-      .updateOne(
-        {
-          _id: match._id,
-        },
-        {
-          $set: {
-            timeoutJobId: timeoutJob.id.toString(),
-          },
-        },
-      )
-      .exec();
+    });
   }
 
   async getPlayingMatch(user: UserDocument) {
@@ -707,5 +642,17 @@ export class MatchService {
     }
 
     return match;
+  }
+
+  private async findByIdAndUpdate(
+    id: string | ObjectId,
+    update: UpdateQuery<MatchDocument>,
+  ) {
+    return this.model
+      .findByIdAndUpdate(id, update, {
+        new: true,
+        useFindAndModify: false,
+      })
+      .exec();
   }
 }
