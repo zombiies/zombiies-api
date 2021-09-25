@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { PrepareTurnEventType } from '../enum/prepare-turn-event-type.enum';
 import { MatchModel } from './match.model';
 
@@ -9,6 +9,8 @@ export class PrepareTurnEventModel {
 
   playerId: string;
   tokenId: string;
+
+  @Field((type) => Int)
   toPosition?: number;
 
   @Field((type) => MatchModel)

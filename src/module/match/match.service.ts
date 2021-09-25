@@ -343,7 +343,7 @@ export class MatchService {
           playerId: userId,
           onHand: cards,
           onBoard: [],
-          crystal: 0,
+          crystal: index === 0 ? 3 : 0,
           inTurn: index === 0,
           confirmTurn: false,
         };
@@ -353,11 +353,12 @@ export class MatchService {
     const match = new this.model({
       playerStatuses,
     });
-
     await match.save();
 
+    const matchWithTimeout = await this.addTimoutJobToMatch(match);
+
     await this.pubSub.publish(MATCH_STARTED, {
-      [MATCH_STARTED]: match.toObject(),
+      [MATCH_STARTED]: matchWithTimeout.toObject(),
     });
 
     return match;
@@ -642,6 +643,24 @@ export class MatchService {
     );
 
     return timeoutJob;
+  }
+
+  private async addTimoutJobToMatch(match: MatchDocument) {
+    const timeoutJob = await this.createMatchTimoutJob(match);
+    await this.model
+      .updateOne(
+        {
+          _id: match._id,
+        },
+        {
+          $set: {
+            timeoutJobId: timeoutJob.id.toString(),
+          },
+        },
+      )
+      .exec();
+
+    return await this.findByIdOrFail(match._id);
   }
 
   private async insertMatchTimoutJob(match: MatchDocument) {

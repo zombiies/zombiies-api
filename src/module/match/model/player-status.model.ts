@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { BoardCardModel } from './board-card.model';
 import { DeckCardModel } from '../../deck/model/deck-card.model';
 
@@ -12,6 +12,7 @@ export class PlayerStatusModel {
   @Field((type) => [DeckCardModel])
   onHand: DeckCardModel[];
 
+  @Field((type) => Int)
   crystal: number;
   inTurn: boolean;
   confirmTurn: boolean;
