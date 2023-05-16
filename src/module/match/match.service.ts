@@ -20,7 +20,7 @@ import {
 } from './subscription/match.trigger';
 import { PlayerStatusModel } from './model/player-status.model';
 import { xPromise } from '../../common/util/bluebird';
-import { User, UserDocument } from '../user/schema/user.schema';
+import { UserDocument } from '../user/schema/user.schema';
 import { CardTokenModel } from '../card/model/card-token.model';
 import { BoardCardModel } from './model/board-card.model';
 import { CardType } from '../card/enum/card-type.enum';
@@ -46,7 +46,6 @@ import { CardSkillModel } from '../card/model/card-skill.model';
 export class MatchService {
   constructor(
     @InjectModel(Match.name) private readonly model: Model<MatchDocument>,
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectQueue(MATCH_QUEUE) private readonly matchQueue: Queue,
     @InjectPubSub() private readonly pubSub: RedisPubSub,
     private readonly deckService: DeckService,
@@ -79,21 +78,21 @@ export class MatchService {
     );
 
     if (!targetStatus) {
-      return;
+      throw new BadRequestException('Not found target');
     }
 
     const { onBoard: currentOnBoard } = currentStatus;
     let { onBoard: targetOnBoard } = targetStatus;
 
-    const attackEvents = [];
+    const attackEvents: AttackEventModel[] = [];
 
     for (const currentCard of currentOnBoard) {
       const { skills } = currentCard;
       for (const skill of skills) {
         const attackEvent = this.castSkill(currentCard, skill, targetOnBoard);
-        attackEvents.push(attackEvent);
 
         if (attackEvent) {
+          attackEvents.push(attackEvent);
           targetOnBoard = attackEvent.targetOnBoard;
 
           if (targetOnBoard.length === 0) {
@@ -105,14 +104,23 @@ export class MatchService {
 
     const newMatch = await this.findByIdAndUpdate(match._id, {
       $set: {
-        playerStatuses: playerStatuses.map((s) =>
-          s.playerId === targetStatus.playerId
-            ? {
-                ...targetStatus,
-                onBoard: targetOnBoard,
-              }
-            : s,
-        ),
+        playerStatuses: playerStatuses
+          .map((s) =>
+            s.playerId === targetStatus.playerId
+              ? {
+                  ...targetStatus,
+                  onBoard: targetOnBoard,
+                }
+              : s,
+          )
+          .map((s) =>
+            s.playerId === currentStatus.playerId
+              ? {
+                  ...s,
+                  confirmTurn: true,
+                }
+              : s,
+          ),
       },
     });
 
@@ -130,7 +138,7 @@ export class MatchService {
   async endMatch(match: MatchDocument, winnerId: string) {
     const newMatch = await this.findByIdAndUpdate(match._id, {
       $set: {
-        winner: winnerId,
+        winnerId,
       },
     });
 
@@ -138,13 +146,7 @@ export class MatchService {
       [MATCH_ENDED]: newMatch,
     });
 
-    const winner = await this.userModel.findById(winnerId).exec();
-
-    if (!winner) {
-      return;
-    }
-
-    const reward = await this.cardService.mintRandom(winner);
+    const reward = await this.cardService.award(winnerId, newMatch);
     await this.pubSub.publish(REWARD_RECEIVED, {
       [REWARD_RECEIVED]: {
         playerId: winnerId,
@@ -627,7 +629,7 @@ export class MatchService {
     const match = await this.matchModel
       .findOne({
         'playerStatuses.playerId': user._id.toString(),
-        winner: null,
+        winnerId: null,
       })
       .exec();
 

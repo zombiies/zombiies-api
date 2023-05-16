@@ -7,7 +7,6 @@ import { MatchResolver } from './match.resolver';
 import { BullModule } from '@nestjs/bull';
 import { MATCH_QUEUE } from '../../config/bull/queue.constant';
 import { MatchConsumer } from './consumer/match.consumer';
-import { User, UserSchema } from '../user/schema/user.schema';
 import { CardModule } from '../card/card.module';
 
 @Module({
@@ -17,10 +16,6 @@ import { CardModule } from '../card/card.module';
       {
         name: Match.name,
         schema: MatchSchema,
-      },
-      {
-        name: User.name,
-        schema: UserSchema,
       },
     ]),
     BullModule.registerQueue({

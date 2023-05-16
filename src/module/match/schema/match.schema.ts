@@ -1,10 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { PlayerStatusModel } from '../model/player-status.model';
-import { UserDocument } from '../../user/schema/user.schema';
-import * as mongoose from 'mongoose';
+import { MongoTimestamp } from '../../../common/type/mongo-timestamp.type';
 
-export type MatchDocument = Match & Document;
+export type MatchDocument = Match & Document & MongoTimestamp;
 
 @Schema({
   timestamps: true,
@@ -22,12 +21,8 @@ export class Match {
   @Prop()
   timeoutJobId?: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    autopopulate: true,
-  })
-  winner?: UserDocument;
+  @Prop()
+  winnerId?: string;
 }
 
 export const MatchSchema = SchemaFactory.createForClass(Match);

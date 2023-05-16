@@ -26,11 +26,13 @@ import { BigNumber } from 'ethers';
 import { CardTokenModel } from './model/card-token.model';
 import { ContractToken } from './interface/contract-token.interface';
 import { randomInt } from 'crypto';
+import { MatchDocument } from '../match/schema/match.schema';
 
 @Injectable()
 export class CardService {
   constructor(
     @InjectModel(Card.name) private readonly cardModel: Model<CardDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly ethClient: EtherClientService,
     @InjectIpfsStorage() private readonly ipfsStorage: IpfsStorage,
   ) {}
@@ -147,11 +149,33 @@ export class CardService {
     return this.contract.getMintFee();
   }
 
-  async mintRandom(user: UserDocument) {
-    return this.mint(
-      user,
-      randomInt(0, 2) === 1 ? CardType.MONSTER : CardType.EQUIPMENT,
+  async award(userId: string, match: MatchDocument) {
+    const user = await this.userModel.findById(userId);
+    const seed = match.updatedAt.toString();
+    const randoms = await this.getRandomCardsWithRandomValue(
+      seed,
+      Math.random() * 2 > 1 ? CardType.MONSTER : CardType.EQUIPMENT,
+      1,
+      1,
     );
+    const reward = randoms.cards[0];
+    const userWallet = this.ethClient.getWalletOfUser(user);
+    const proofCid = await this.ipfsStorage.putObject({
+      seed,
+      matchId: match._id.toString(),
+    });
+    const proofUri = cidToUri(proofCid);
+
+    const tx = await this.contract.safeMint(
+      userWallet.address,
+      reward.tokenUri,
+      proofUri,
+    );
+    const receipt = await tx.wait();
+    const tokenIds = getTokenIdsFromReceipt(receipt);
+    const tokenId = tokenIds[0];
+
+    return this.findOneCardToken(tokenId);
   }
 
   async mint(user: User, type: CardType) {

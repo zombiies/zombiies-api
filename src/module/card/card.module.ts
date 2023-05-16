@@ -5,6 +5,7 @@ import { Card, CardSchema } from './schema/card.schema';
 import { CardCommand } from './command/card.command';
 import { CardResolver } from './card.resolver';
 import { EtherClientModule } from '../ether-client/ether-client.module';
+import { User, UserSchema } from '../user/schema/user.schema';
 
 @Module({
   providers: [CardService, CardCommand, CardResolver],
@@ -18,6 +19,10 @@ import { EtherClientModule } from '../ether-client/ether-client.module';
 
           return schema;
         },
+      },
+      {
+        name: User.name,
+        useFactory: () => UserSchema,
       },
     ]),
     EtherClientModule,

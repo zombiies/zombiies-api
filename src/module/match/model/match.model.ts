@@ -1,7 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { PlayerStatusModel } from './player-status.model';
-import { UserModel } from '../../user/model/user.model';
-import { UserDocument } from '../../user/schema/user.schema';
 
 @ObjectType()
 export class MatchModel {
@@ -9,7 +7,5 @@ export class MatchModel {
   id?: string;
 
   playerStatuses: PlayerStatusModel[];
-
-  @Field((type) => UserModel)
-  winner?: UserDocument;
+  winnerId?: string;
 }
